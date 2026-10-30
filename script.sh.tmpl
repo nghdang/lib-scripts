@@ -29,24 +29,24 @@ export G__SCRIPT_NAME_SH_LOADED=1
 # Global Constants
 # =============================================================================
 
-# ----- Project Scope -----
+# ===== Project Scope =====
 
 ## Explanation
 ##   Constants that shall be used by this script or other scripts.
-##
 ##     - Naming convention: `UPPER_CASE` with prefix `G__`.
+##
 ##     - These constants shall be declared with `export` and `readonly`.
 ##
 ##     - E.g. `export G__PROJECT_SCOPE_CONSTANT="example"`
 ##            `readonly G__PROJECT_SCOPE_CONSTANT`
 ##
 
-# ----- File Scope -----
+# ===== File Scope =====
 
 ## Explanation
 ##   Constants that shall be used by this script only.
-##
 ##     - Naming convention: `UPPER_CASE`.
+##
 ##     - These constants shall be declared with `readonly`.
 ##
 ##     - E.g. `readonly FILE_SCOPE_CONSTANT="example"`
@@ -56,17 +56,18 @@ export G__SCRIPT_NAME_SH_LOADED=1
 # Global Variables
 # =============================================================================
 
-# ----- Project Scope -----
+# ===== Project Scope =====
 
 ## Explanation
 ##   Variables that shall be used by this script or other scripts.
 ##     - Naming convention: `snake_case` with prefix `g__`.
+##
 ##     - These variables shall be declared with `export`.
 ##
 ##     - E.g. `export g__project_scope_variable="example"`
 ##
 
-# ----- File Scope -----
+# ===== File Scope =====
 
 ## Explanation
 ##   Variables that shall be used by this script only.
@@ -82,8 +83,10 @@ export G__SCRIPT_NAME_SH_LOADED=1
 ## Explanation
 ##   Functions that shall be used by this script only.
 ##     - Naming convention: `snake_case` with prefix `_<module>__`
+##
 ##     - Docstring convention: Custom Google style with Summary, Arguments,
 ##                             and Returns sections only.
+##
 ##       - Summary: One sentence to describe the function purpose.
 ##                  `Summary` keyword is omitted for this section.
 ##
@@ -124,6 +127,7 @@ export G__SCRIPT_NAME_SH_LOADED=1
 ## Explanation
 ##   Functions that shall be used by this script or other scripts.
 ##     - Naming convention: `snake_case` with prefix `<module>__`
+##
 ##     - Docstring convention: Same as private functions.
 ##
 ##     - E.g.
