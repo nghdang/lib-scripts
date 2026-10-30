@@ -1,0 +1,144 @@
+#!/usr/bin/env bash
+#
+# Source      : <source-script.sh>
+# Dependencies: <dependency-script-1.sh>
+#               <dependency-script-2.sh>
+# Description : <source-script.sh description>
+#
+
+## Explanation
+##   Source: Relative path of this script to the project root dir.
+##     - Naming convention: `kebab-case`.
+##
+##     - E.g. ./src/source-script.sh
+##
+##   Dependencies: Relative paths of the scripts that this script depends on.
+##     - Naming convention: `kebab-case`.
+##
+##     - E.g. ./src/dependency-script-1.sh
+##
+##   Description: Short summary about the purpose of this script.
+##                Note: Do not mention the detailed implementation.
+##
+
+# ----- Source Guard -----
+[[ -n "${G__SCRIPT_NAME_SH_LOADED:-}" ]] && return 0
+export G__SCRIPT_NAME_SH_LOADED=1
+
+# =============================================================================
+# Global Constants
+# =============================================================================
+
+# ----- Project Scope -----
+
+## Explanation
+##   Constants that shall be used by this script or other scripts.
+##
+##     - Naming convention: `UPPER_CASE` with prefix `G__`.
+##     - These constants shall be declared with `export` and `readonly`.
+##
+##     - E.g. `export G__PROJECT_SCOPE_CONSTANT="example"`
+##            `readonly G__PROJECT_SCOPE_CONSTANT`
+##
+
+# ----- File Scope -----
+
+## Explanation
+##   Constants that shall be used by this script only.
+##
+##     - Naming convention: `UPPER_CASE`.
+##     - These constants shall be declared with `readonly`.
+##
+##     - E.g. `readonly FILE_SCOPE_CONSTANT="example"`
+##
+
+# =============================================================================
+# Global Variables
+# =============================================================================
+
+# ----- Project Scope -----
+
+## Explanation
+##   Variables that shall be used by this script or other scripts.
+##     - Naming convention: `snake_case` with prefix `g__`.
+##     - These variables shall be declared with `export`.
+##
+##     - E.g. `export g__project_scope_variable="example"`
+##
+
+# ----- File Scope -----
+
+## Explanation
+##   Variables that shall be used by this script only.
+##     - Naming convention: `snake_case`.
+##
+##     - E.g. `file_scope_variable="example"`
+##
+
+# =============================================================================
+# Private Functions
+# =============================================================================
+
+## Explanation
+##   Functions that shall be used by this script only.
+##     - Naming convention: `snake_case` with prefix `_<module>__`
+##     - Docstring convention: Custom Google style with Summary, Arguments,
+##                             and Returns sections only.
+##       - Summary: One sentence to describe the function purpose.
+##                  `Summary` keyword is omitted for this section.
+##
+##       - Arguments: List all function parameters with the following format
+##                    <param> [in | out | inout]: <description>
+##
+##       - Returns: List all return codes with the following format
+##                  <return code>: <when will this code be returned>
+##
+##     - E.g.
+##       ```
+##       #######################################
+##       # Assert the given path is a file or not
+##       #
+##       # Arguments:
+##       #   file_path: Path of file to assert
+##       #
+##       # Returns:
+##       #   0: Path is a file
+##       #   1: Path is not a file
+##       #######################################
+##       function _script__assert_file() {
+##           local _file_path="$1"
+##
+##           if [[ -f "$_file_path" ]]; then
+##               return 0
+##           else
+##               return 1
+##           fi
+##       }
+##       ```
+##
+
+# =============================================================================
+# Public Functions
+# =============================================================================
+
+## Explanation
+##   Functions that shall be used by this script or other scripts.
+##     - Naming convention: `snake_case` with prefix `<module>__`
+##     - Docstring convention: Same as private functions.
+##
+##     - E.g.
+##       ```
+##       <function docstring>
+##       function script__bar() {
+##           echo "do something"
+##       }
+##       ```
+##
+
+# =============================================================================
+# Entry Point
+# =============================================================================
+
+## Explanation
+##   The very first things shall be run whenever this script is invoked.
+##
