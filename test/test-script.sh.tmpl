@@ -1,0 +1,142 @@
+#!/usr/bin/env bash
+#
+# Source      : <test-source-script.sh>
+# Dependencies: <dependency-script-1.sh>
+#               <dependency-script-2.sh>
+# Description : Test of <source-script.sh>
+#
+
+## Explanation
+##   Source: Relative path of this test script to the project root dir.
+##     - Naming convention: `test-<name of file under test>.sh`.
+##
+##     - E.g. ./test/test-source-script.sh
+##
+##   Dependencies: Relative paths of the scripts that this script depends on.
+##     - Naming convention: `kebab-case`.
+##
+##     - E.g. ./test/lib-tests.sh
+##
+##   Description: Info of the file under test (FUT).
+##
+
+# ----- Source Guard -----
+[[ -n "${G__SCRIPT_NAME_SH_LOADED:-}" ]] && return 0
+export G__SCRIPT_NAME_SH_LOADED=1
+
+# =============================================================================
+# Global Constants
+# =============================================================================
+
+## Explanation
+##   Constants that shall be used by this script only.
+##     - Naming convention: `UPPER_CASE`.
+##
+##     - These constants shall be declared with `readonly`.
+##
+##     - E.g. `readonly FILE_SCOPE_CONSTANT="example"`
+##
+
+TEST_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+readonly TEST_DIR
+
+FUT_PATH="$(realpath "${TEST_DIR}/../src/lib-constants.sh")"
+readonly FUT_PATH
+
+FUT_DEPS=()
+readonly FUT_DEPS
+
+# =============================================================================
+# Global Variables
+# =============================================================================
+
+## Explanation
+##   Variables that shall be used by this script only.
+##     - Naming convention: `snake_case`.
+##
+##     - E.g. `file_scope_variable="example"`
+##
+
+# =============================================================================
+# Helper Functions
+# =============================================================================
+
+## Explanation
+##   Functions that shall be used by test cases in this script only.
+##     - Naming convention: `snake_case` with prefix `_helper__`
+##
+##     - Docstring convention: Custom Google style with Summary, Arguments,
+##                             and Returns sections only.
+##
+##       - Summary: One sentence to describe the function purpose.
+##                  `Summary` keyword is omitted for this section.
+##
+##       - Arguments: List all function parameters with the following format
+##                    <param> [in | out | inout]: <description>
+##
+##       - Returns: List all return codes with the following format
+##                  <return code>: <when will this code be returned>
+##
+##     - E.g.
+##       ```
+##       #######################################
+##       # Assert the given path is a file or not
+##       #
+##       # Arguments:
+##       #   file_path: Path of file to assert
+##       #
+##       # Returns:
+##       #   0: Path is a file
+##       #   1: Path is not a file
+##       #######################################
+##       function _helper__assert_file() {
+##           local _file_path="$1"
+##
+##           if [[ -f "$_file_path" ]]; then
+##               return 0
+##           else
+##               return 1
+##           fi
+##       }
+##       ```
+##
+
+# =============================================================================
+# Test Cases
+# =============================================================================
+
+#
+# Equivalence class table of `<sut name>`
+# ID    <Param 1>   <Param 2>   ...     Expected    Return Code
+# --    ---------   ---------           --------    -----------
+# TC1   <value>     <value>             <expected>  <code>
+#
+
+## Explanation
+##   1. Equivalence class table
+##      Describe the input groups, expectation and return code of all test
+##      cases of a single software under test (SUT)
+##
+##   2. Functions that shall be invoked during the test.
+##     - Naming convention: `snake_case` with prefix
+##                          `tc__<sut name>__<tc id>__<tc name>` where,
+##                          `<tc id>` is retrieved from the corresponding
+##                           equivalence class table
+##
+##     - Docstring convention: Test case function does not have docstring.
+##
+##     - E.g.
+##       ```
+##       function tc__load_file__tc1__success() {
+##           echo "do something"
+##       }
+##       ```
+##
+
+# =============================================================================
+# Entry Point
+# =============================================================================
+# shellcheck disable=SC1091
+source "${TEST_DIR}/lib-tests.sh"
+
+test_main "$FUT_PATH" "${FUT_DEPS[@]}"
