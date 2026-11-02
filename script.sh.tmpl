@@ -10,12 +10,13 @@
 ##   Source: Relative path of this script to the project root dir.
 ##     - Naming convention: `kebab-case`.
 ##
-##     - E.g. ./src/source-script.sh
+##     - E.g. src/source-script.sh
 ##
 ##   Dependencies: Relative paths of the scripts that this script depends on.
+##                 If this script has no dependencies, specify `None`.
 ##     - Naming convention: `kebab-case`.
 ##
-##     - E.g. ./src/dependency-script-1.sh
+##     - E.g. src/dependency-script-1.sh
 ##
 ##   Description: Short summary about the purpose of this script.
 ##                Note: Do not mention the detailed implementation.
@@ -37,6 +38,9 @@ export G__SCRIPT_NAME_SH_LOADED=1
 ##
 ##     - These constants shall be declared with `export` and `readonly`.
 ##
+##     - Large groups of constants should be organized into logical
+##       categories using sub-dividers (e.g. `# ----- Category -----`).
+##
 ##     - E.g. `export G__PROJECT_SCOPE_CONSTANT="example"`
 ##            `readonly G__PROJECT_SCOPE_CONSTANT`
 ##
@@ -48,6 +52,9 @@ export G__SCRIPT_NAME_SH_LOADED=1
 ##     - Naming convention: `UPPER_CASE`.
 ##
 ##     - These constants shall be declared with `readonly`.
+##
+##     - Large groups of constants should be organized into logical
+##       categories using sub-dividers (e.g. `# ----- Category -----`).
 ##
 ##     - E.g. `readonly FILE_SCOPE_CONSTANT="example"`
 ##
@@ -96,26 +103,47 @@ export G__SCRIPT_NAME_SH_LOADED=1
 ##       - Returns: List all return codes with the following format
 ##                  <return code>: <when will this code be returned>
 ##
+##     - Internal structure convention: Function body should be organized into
+##       4 distinct sections:
+##         1. `# Constants`: Local constants used within the function.
+##         2. `# Variables`: Local variables declarations. Parameter variables
+##            shall be on the top and other variables shall be on the bottom,
+##            separated by a blank line.
+##         3. `# Parse and validate arguments`: Argument count and value checks.
+##         4. `# Function body`: Main execution logic and return statement.
+##
 ##     - E.g.
 ##       ```
 ##       #######################################
-##       # Assert the given path is a file or not
+##       # Assert the given path is a file or not.
 ##       #
 ##       # Arguments:
-##       #   file_path: Path of file to assert
+##       #   file_path [in]: Path of file to assert.
 ##       #
 ##       # Returns:
-##       #   0: Path is a file
-##       #   1: Path is not a file
+##       #   G__ERR_OK: Path is a file.
+##       #   G__ERR_NOT_FILE: Path is not a file.
+##       #   G__ERR_MISSING_ARG: No file path was provided.
 ##       #######################################
 ##       function _script__assert_file() {
-##           local _file_path="$1"
+##           # Constants
 ##
-##           if [[ -f "$_file_path" ]]; then
-##               return 0
-##           else
-##               return 1
+##           # Variables
+##           local _file_path
+##
+##           local _ret_code=$G__ERR_OK
+##
+##           # Parse and validate arguments
+##           [[ $# -lt 1 ]] && return "$G__ERR_MISSING_ARG"
+##
+##           _file_path="$1"
+##
+##           # Function body
+##           if [[ ! -f "$_file_path" ]]; then
+##               _ret_code=$G__ERR_NOT_FILE
 ##           fi
+##
+##           return "$_ret_code"
 ##       }
 ##       ```
 ##
@@ -129,6 +157,8 @@ export G__SCRIPT_NAME_SH_LOADED=1
 ##     - Naming convention: `snake_case` with prefix `<module>__`
 ##
 ##     - Docstring convention: Same as private functions.
+##
+##     - Internal structure convention: Same as private functions.
 ##
 ##     - E.g.
 ##       ```
@@ -145,4 +175,6 @@ export G__SCRIPT_NAME_SH_LOADED=1
 
 ## Explanation
 ##   The very first things shall be run whenever this script is invoked.
+##   Note: This section is optional and should be omitted for reusable
+##         library scripts that are meant to be sourced only.
 ##

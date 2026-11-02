@@ -3,7 +3,7 @@
 # Source      : <test-source-script.sh>
 # Dependencies: <dependency-script-1.sh>
 #               <dependency-script-2.sh>
-# Description : Test of <source-script.sh>
+# FUT         : <source-script.sh>
 #
 
 ## Explanation
@@ -17,7 +17,7 @@
 ##
 ##     - E.g. ./test/lib-tests.sh
 ##
-##   Description: Info of the file under test (FUT).
+##   FUT: Relative path of the file under test (FUT) to the project root dir.
 ##
 
 # ----- Source Guard -----
@@ -37,14 +37,17 @@ export G__SCRIPT_NAME_SH_LOADED=1
 ##     - E.g. `readonly FILE_SCOPE_CONSTANT="example"`
 ##
 
-TEST_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
-readonly TEST_DIR
+TEST_SCRIPT_PARENT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+readonly TEST_SCRIPT_PARENT_DIR
 
-FUT_PATH="$(realpath "${TEST_DIR}/../src/lib-constants.sh")"
-readonly FUT_PATH
+LIB_TESTS_PATH="${TEST_SCRIPT_PARENT_DIR}/lib-tests.sh"
+readonly LIB_TESTS_PATH
 
-FUT_DEPS=()
-readonly FUT_DEPS
+FUT_RELATIVE_PATH="../src/lib-base.sh"
+readonly FUT_RELATIVE_PATH
+
+FUT_DEPENDENCY_RELATIVE_PATHS=()
+readonly FUT_DEPENDENCY_RELATIVE_PATHS
 
 # =============================================================================
 # Global Variables
@@ -136,7 +139,21 @@ readonly FUT_DEPS
 # =============================================================================
 # Entry Point
 # =============================================================================
-# shellcheck disable=SC1090,SC1091
-source "${TEST_DIR}/lib-tests.sh"
+function main() {
+    # shellcheck disable=SC1090,SC1091
+    source "$LIB_TESTS_PATH"
 
-test_main "$FUT_PATH" "${FUT_DEPS[@]}"
+    local _fut_path=""
+    local _fut_relative_path=""
+    local -a fut_dependency_paths=()
+
+    _fut_path="$(realpath "${TEST_SCRIPT_PARENT_DIR}/${FUT_RELATIVE_PATH}")"
+
+    for _fut_relative_path in "${FUT_DEPENDENCY_RELATIVE_PATHS[@]}"; do
+        fut_dependency_paths+=("$(realpath "${TEST_SCRIPT_PARENT_DIR}/${_fut_relative_path}")")
+    done
+
+    lib_tests__test_main "$_fut_path" "${fut_dependency_paths[@]}"
+}
+
+main

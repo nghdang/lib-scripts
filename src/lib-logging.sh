@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Source      : src/lib-logging.sh
-# Dependencies: src/lib-constants.sh
+# Dependencies: src/lib-base.sh
 # Description : Logging utility.
 #
 
@@ -17,7 +17,7 @@ export G__LIB_LOGGING_SH_LOADED=1
 
 # ===== File Scope =====
 
-readonly LOG_LEVEL_STRS=("DEBUG" "INFO " "WARN " "ERROR")
+readonly LOG_LEVEL_STRS=("DEBUG" "INFO" "WARN" "ERROR" "FATAL")
 readonly DEFAULT_LOG_LEVEL="$G__LOG_LEVEL_INFO"
 readonly DEFAULT_STACK=0
 
@@ -49,18 +49,19 @@ function _lib_logging__write_log() {
     # Constants
 
     # Variables
+    local _level_str
+    local _message
+    local _stack
+
     local _idx
     local _timestamp
     local _caller_path
     local _caller_name
+    local _func_name
     local _line_no
     local _context
 
-    # Arguments
-    local _level_str=""
-    local _message
-    local _stack
-
+    # Parse and validate arguments
     [[ $# -lt 2 ]] && return "$G__ERR_MISSING_ARG"
 
     _message="$2"
@@ -76,19 +77,21 @@ function _lib_logging__write_log() {
         return "$G__ERR_INVALID_ARG"
     fi
 
-    if [[ ! "$_stack" =~ ^0*[1-9][0-9]*$ ]]; then
-        return "$G__ERR_INVALID_ARG"
-    fi
+    lib_base__is_number "$_stack" || return "$G__ERR_INVALID_ARG"
 
-    printf -v _timestamp '%(%Y-%m-%d %H:%M:%S)T' -1
+    # Function body
+    _timestamp="$(date +"%Y-%m-%d %H:%M:%S")"
 
     _caller_path="${BASH_SOURCE[$((_stack + 1))]:-unknown}"
     _caller_name="${_caller_path##*/}"
 
+    _func_name="${FUNCNAME[$((_stack + 1))]:-unknown}"
+
     _line_no="${BASH_LINENO[$_stack]:-0}"
 
-    _context="${_timestamp} ${_level_str} ${_caller_name}:${_line_no}"
-    printf '%s %b\n' "${_context}" "${_message}"
+    _context="$_timestamp $(printf '%5s' "$_level_str")"
+    _context="$_context $_caller_name ${_func_name}:${_line_no}"
+    printf '%s %b\n' "$_context" "$_message"
 
     return "$G__ERR_OK"
 }
@@ -101,45 +104,77 @@ function _lib_logging__write_log() {
 #
 # Arguments:
 #   message [in]: Message text to print.
-#   stack [in]: (optional) Stack depth (default: DEFAULT_LOG_LEVEL).
+#   stack [in]: (optional) Stack depth (default: $DEFAULT_STACK).
 #
 # Returns:
 #   G__ERR_OK: Log message was printed successfully.
-#   G__ERR_MISSING_ARG: Log  message was not provided.
+#   G__ERR_MISSING_ARG: Log message was not provided.
 #   G__ERR_INVALID_ARG: Invalid stack level number.
 #######################################
 function lib_logging__debug() {
-    local _message="$1"
-    local _stack="${2:-1}"
+    # Constants
 
+    # Variables
+    local _message
+    local _stack
+
+    local _ret_code="$G__ERR_OK"
     local _level="${LOG_LEVEL:-$DEFAULT_LOG_LEVEL}"
+
+    # Parse and validate arguments
+    [[ $# -lt 1 ]] && return "$G__ERR_MISSING_ARG"
+
+    _message="$1"
+    _stack="${2:-$DEFAULT_STACK}"
+
+    # Function body
+    lib_base__is_number "$_level" || _level="$DEFAULT_LOG_LEVEL"
 
     if [[ "$_level" -le "$G__LOG_LEVEL_DEBUG" ]]; then
         _lib_logging__write_log "DEBUG" "$_message" "$_stack"
+        _ret_code=$?
     fi
+
+    return "$_ret_code"
 }
 
 #######################################
 # Log an info message to STDOUT.
 #
-# Globals:
-#   LOG_LEVEL: (optional) Active logging threshold level.
-#   DEFAULT_LOG_LEVEL: Fallback severity threshold level.
-#   G__LOG_LEVEL_INFO: Info severity threshold level.
-#
 # Arguments:
 #   message [in]: Message text to print.
-#   stack [in]: (optional) Stack depth (default: 1).
+#   stack [in]: (optional) Stack depth (default: $DEFAULT_STACK).
+#
+# Returns:
+#   G__ERR_OK: Log message was printed successfully.
+#   G__ERR_MISSING_ARG: Log message was not provided.
+#   G__ERR_INVALID_ARG: Invalid stack level number.
 #######################################
 function lib_logging__info() {
-    local _message="$1"
-    local _stack="${2:-1}"
+    # Constants
 
+    # Variables
+    local _message
+    local _stack
+
+    local _ret_code="$G__ERR_OK"
     local _level="${LOG_LEVEL:-$DEFAULT_LOG_LEVEL}"
 
+    # Parse and validate arguments
+    [[ $# -lt 1 ]] && return "$G__ERR_MISSING_ARG"
+
+    _message="$1"
+    _stack="${2:-$DEFAULT_STACK}"
+
+    # Function body
+    lib_base__is_number "$_level" || _level="$DEFAULT_LOG_LEVEL"
+
     if [[ "$_level" -le "$G__LOG_LEVEL_INFO" ]]; then
-        _lib_logging__write_log "INFO " "$_message" "$_stack"
+        _lib_logging__write_log "INFO" "$_message" "$_stack"
+        _ret_code=$?
     fi
+
+    return "$_ret_code"
 }
 
 #######################################
@@ -147,22 +182,39 @@ function lib_logging__info() {
 #
 # Arguments:
 #   message [in]: Message text to print.
-#   stack [in]: (optional) Stack depth (default: DEFAULT_LOG_LEVEL).
+#   stack [in]: (optional) Stack depth (default: $DEFAULT_STACK).
 #
 # Returns:
 #   G__ERR_OK: Log message was printed successfully.
-#   G__ERR_MISSING_ARG: Log  message was not provided.
+#   G__ERR_MISSING_ARG: Log message was not provided.
 #   G__ERR_INVALID_ARG: Invalid stack level number.
 #######################################
 function lib_logging__warn() {
-    local _message="$1"
-    local _stack="${2:-1}"
+    # Constants
 
+    # Variables
+    local _message
+    local _stack
+
+    local _ret_code="$G__ERR_OK"
     local _level="${LOG_LEVEL:-$DEFAULT_LOG_LEVEL}"
 
+    # Parse and validate arguments
+    [[ $# -lt 1 ]] && return "$G__ERR_MISSING_ARG"
+
+    _message="$1"
+    _stack="${2:-$DEFAULT_STACK}"
+
+    # Function body
+    lib_base__is_number "$_level" || _level="$DEFAULT_LOG_LEVEL"
+
     if [[ "$_level" -le "$G__LOG_LEVEL_WARN" ]]; then
-        _lib_logging__write_log "WARN " "${G__YELLOW}${_message}${G__NC}" "$_stack"
+        _message="${G__COLOR_YELLOW}${_message}${G__COLOR_RESET}"
+        _lib_logging__write_log "WARN" "$_message" "$_stack"
+        _ret_code=$?
     fi
+
+    return "$_ret_code"
 }
 
 #######################################
@@ -170,7 +222,7 @@ function lib_logging__warn() {
 #
 # Arguments:
 #   message [in]: Message text to print.
-#   stack [in]: (optional) Stack depth (default: DEFAULT_LOG_LEVEL).
+#   stack [in]: (optional) Stack depth (default: $DEFAULT_STACK).
 #
 # Returns:
 #   G__ERR_OK: Log message was printed successfully.
@@ -178,12 +230,82 @@ function lib_logging__warn() {
 #   G__ERR_INVALID_ARG: Invalid stack level number.
 #######################################
 function lib_logging__error() {
-    local _message="$1"
-    local _stack="${2:-1}"
+    # Constants
 
+    # Variables
+    local _message
+    local _stack
+
+    local _ret_code="$G__ERR_OK"
     local _level="${LOG_LEVEL:-$DEFAULT_LOG_LEVEL}"
 
+    # Parse and validate arguments
+    [[ $# -lt 1 ]] && return "$G__ERR_MISSING_ARG"
+
+    _message="$1"
+    _stack="${2:-$DEFAULT_STACK}"
+
+    # Function body
+    lib_base__is_number "$_level" || _level="$DEFAULT_LOG_LEVEL"
+
     if [[ "$_level" -le "$G__LOG_LEVEL_ERROR" ]]; then
-        _lib_logging__write_log "ERROR" "${G__RED}${_message}${G__NC}" "$_stack"
+        _message="${G__COLOR_RED}${_message}${G__COLOR_RESET}"
+        _lib_logging__write_log "ERROR" "$_message" "$_stack"
+        _ret_code=$?
     fi
+
+    return "$_ret_code"
+}
+
+#######################################
+# Log a fatal message to STDOUT with red color.
+#
+# Arguments:
+#   message [in]: Message text to print.
+#   exit_code [in]: Exit code to terminate the process with.
+#   stack [in]: (optional) Stack depth (default: $DEFAULT_STACK).
+#
+# Returns:
+#   G__ERR_MISSING_ARG: Log message or exit code was not provided.
+#   G__ERR_INVALID_ARG: Invalid exit code number.
+#######################################
+function lib_logging__fatal() {
+    # Constants
+
+    # Variables
+    local _message
+    local _exit_code
+    local _stack
+
+    local _ret_code="$G__ERR_OK"
+    local _ret_code_str
+    local _sub_message
+
+    # Parse and validate arguments
+    [[ $# -lt 2 ]] && return "$G__ERR_MISSING_ARG"
+
+    _message="$1"
+    _exit_code="$2"
+    _stack="${3:-$DEFAULT_STACK}"
+
+    lib_base__is_number "$_exit_code" || return "$G__ERR_INVALID_ARG"
+
+    # Function body
+    _message="${G__COLOR_RED}${_message}${G__COLOR_RESET}"
+    _lib_logging__write_log "FATAL" "$_message" "$_stack"
+    _ret_code=$?
+
+    if [[ "$G__ERR_OK" -ne "$_ret_code" ]]; then
+        _ret_code_str="$(lib_base__error_code_to_string "$_ret_code")"
+
+        _sub_message="Unexpected error occurred while log was being written"
+        _sub_message="${_sub_message}: ${_ret_code_str}"
+
+        echo -e "${G__COLOR_RED}${_sub_message}${G__COLOR_RESET}"
+        echo -e "${G__COLOR_RED}FATAL: ${_message}${G__COLOR_RESET}"
+
+        _exit_code="$_ret_code"
+    fi
+
+    exit "$_exit_code"
 }
