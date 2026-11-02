@@ -5,6 +5,7 @@
 # Description : Global constants used in cross-projects.
 #
 
+# ----- Source Guard -----
 [[ -n "${G__LIB_CONSTANTS_SH_LOADED:-}" ]] && return 0
 export G__LIB_CONSTANTS_SH_LOADED=1
 

@@ -136,7 +136,7 @@ readonly FUT_DEPS
 # =============================================================================
 # Entry Point
 # =============================================================================
-# shellcheck disable=SC1091
+# shellcheck disable=SC1090,SC1091
 source "${TEST_DIR}/lib-tests.sh"
 
 test_main "$FUT_PATH" "${FUT_DEPS[@]}"

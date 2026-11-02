@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 #
-# Source      : test/lib-tests.sh
+# Source      : src/lib-constants.sh
 # Dependencies: None
 # Description : Testing framework.
 #
+
+# ----- Source Guard -----
+[[ -n "${G__LIB_TESTS_SH_LOADED:-}" ]] && return 0
+export G__LIB_TESTS_SH_LOADED=1
 
 # =============================================================================
 # Global Constants
@@ -11,105 +15,14 @@
 
 # ===== Project Scope =====
 
-# ----- Error Codes -----
-export G__ERR_OK=0
-
-# Arguments error codes
-export G__ERR_MISSING_ARG=10
-export G__ERR_INVALID_ARG=11
-
-# File system error codes
-export G__ERR_NOT_FOUND=20
-export G__ERR_ALREADY_EXISTS=21
-export G__ERR_NOT_FILE=22
-export G__ERR_NOT_DIR=23
-export G__ERR_READ_FAILED=24
-export G__ERR_WRITE_FAILED=25
-
-# ----- Logging level -----
-export G__LOG_LEVEL_DEBUG=0
-export G__LOG_LEVEL_INFO=1
-export G__LOG_LEVEL_WARN=2
-export G__LOG_LEVEL_ERROR=3
-export -a G__LOG_LEVELS_STR=("DEBUG" "INFO" "WARN" "ERROR")
-
 # ===== File Scope =====
+LIB_TESTS_PARENT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+readonly LIB_TESTS_PARENT_DIR
 
-# ----- Terminal & UI Styling -----
-# ANSI escape sequences for terminal output colors
-export COLOR_RED=$'\033[0;31m'
-readonly COLOR_RED
-
-export COLOR_GREEN=$'\033[0;32m'
-readonly COLOR_GREEN
-
-export COLOR_YELLOW=$'\033[0;33m'
-readonly COLOR_YELLOW
-
-export COLOR_BLUE=$'\033[0;34m'
-readonly COLOR_BLUE
-
-export COLOR_MAGENTA=$'\033[0;35m'
-readonly COLOR_MAGENTA
-
-export COLOR_CYAN=$'\033[0;36m'
-readonly COLOR_CYAN
-
-export COLOR_GRAY=$'\033[0;37m'
-readonly COLOR_GRAY
-
-export COLOR_RESET=$'\033[0m'
-readonly COLOR_RESET
-
-# ----- Layout & Table Formatting -----
-# Terminal heading dividers and line width
-export DIVIDER_WIDTH=80
-readonly DIVIDER_WIDTH
-
-export DIVIDER_H0_CHAR="@"
-readonly DIVIDER_H0_CHAR
-
-export DIVIDER_H1_CHAR="#"
-readonly DIVIDER_H1_CHAR
-
-export DIVIDER_H2_CHAR="="
-readonly DIVIDER_H2_CHAR
-
-export DIVIDER_H3_CHAR="-"
-readonly DIVIDER_H3_CHAR
-
-export DIVIDER_H4_CHAR="."
-readonly DIVIDER_H4_CHAR
-
-# Table formatting manifest
-export TABLE_ROW_PREFIX="| "
-readonly TABLE_ROW_PREFIX
-
-export TABLE_ROW_PREFIX_LEN=${#TABLE_ROW_PREFIX}
-readonly TABLE_ROW_PREFIX_LEN
-
-export TABLE_ROW_SUFFIX=" |"
-readonly TABLE_ROW_SUFFIX
-
-export TABLE_ROW_SUFFIX_LEN=${#TABLE_ROW_SUFFIX}
-readonly TABLE_ROW_SUFFIX_LEN
-
-export TABLE_HEADER_SEPARATOR=" | "
-readonly TABLE_HEADER_SEPARATOR
-
-export TABLE_HEADER_SEPARATOR_LEN=${#TABLE_HEADER_SEPARATOR}
-readonly TABLE_HEADER_SEPARATOR_LEN
-
-export TABLE_COL_SEPARATOR=" : "
-readonly TABLE_COL_SEPARATOR
-
-export TABLE_COL_SEPARATOR_LEN=${#TABLE_COL_SEPARATOR}
-readonly TABLE_COL_SEPARATOR_LEN
-
-TABLE_WIDTH=$((DIVIDER_WIDTH - TABLE_ROW_PREFIX_LEN))
-TABLE_WIDTH=$((TABLE_WIDTH - TABLE_ROW_SUFFIX_LEN))
-export TABLE_WIDTH
-readonly TABLE_WIDTH
+LIB_TESTS_DEPS=(
+    "../src/lib-constants.sh"
+)
+readonly LIB_TESTS_DEPS
 
 # =============================================================================
 # Global Variables
@@ -147,7 +60,7 @@ function _lib_tests__gen_divider() {
 
     local _placeholder
 
-    printf -v _placeholder '%*s' "$DIVIDER_WIDTH" ''
+    printf -v _placeholder '%*s' "$G__DIVIDER_WIDTH" ''
     echo "${_placeholder// /$_char}"
 
     return "$G__ERR_OK"
@@ -180,32 +93,32 @@ function _load_sut() {
         echo -n "Loading FUT dependency: '$_fut_dep'"
 
         if [[ ! -f "$_fut_dep" ]]; then
-            echo -e "${COLOR_RED}  >> Dependency does not exist!!${COLOR_RESET}"
+            echo -e "${G__COLOR_RED}  >> Dependency does not exist!!${G__COLOR_RESET}"
             return "$G__ERR_NOT_FOUND"
         fi
 
         # shellcheck disable=SC1090,SC1091
         source "$_fut_dep"
-        echo -e "${COLOR_GREEN}  >> Loaded${COLOR_RESET}"
+        echo -e "${G__COLOR_GREEN}  >> Loaded${G__COLOR_RESET}"
     done
 
     echo -n "Loading FUT: '${_fut_path}'"
     if [[ ! -f "$_fut_path" ]]; then
-        echo -e "${COLOR_RED}  >> FUT does not exist!!${COLOR_RESET}"
+        echo -e "${G__COLOR_RED}  >> FUT does not exist!!${G__COLOR_RESET}"
         return "$G__ERR_NOT_FOUND"
     fi
 
     # shellcheck disable=SC1090,SC1091
     source "$_fut_path"
-    echo -e "${COLOR_GREEN}  >> Loaded${COLOR_RESET}"
+    echo -e "${G__COLOR_GREEN}  >> Loaded${G__COLOR_RESET}"
 
     echo ""
-    _lib_tests__gen_divider "$DIVIDER_H2_CHAR"
-    echo -e "${COLOR_BLUE}>> FUT: ${_fut_path}${COLOR_RESET}"
+    _lib_tests__gen_divider "$G__DIVIDER_H2_CHAR"
+    echo -e "${G__COLOR_BLUE}>> FUT: ${_fut_path}${G__COLOR_RESET}"
     for _fut_dep in "${_fut_deps[@]}"; do
-        echo -e "${COLOR_GRAY}     - ${_fut_dep}${COLOR_RESET}"
+        echo -e "${G__COLOR_GRAY}     - ${_fut_dep}${G__COLOR_RESET}"
     done
-    _lib_tests__gen_divider "$DIVIDER_H2_CHAR"
+    _lib_tests__gen_divider "$G__DIVIDER_H2_CHAR"
 }
 
 #######################################
@@ -232,7 +145,7 @@ function _collect_tests() {
     _fut_tc_names_raw="$(declare -F | grep 'declare -f tc_' | sort | awk '{print $3}')"
 
     if [[ -z "$_fut_tc_names_raw" ]]; then
-        echo -e "${COLOR_YELLOW}No test case is found. All test cases should start with 'tc_' to be able to recognize${COLOR_RESET}"
+        echo -e "${G__COLOR_YELLOW}No test case is found. All test cases should start with 'tc_' to be able to recognize${G__COLOR_RESET}"
         return 0
     fi
 
@@ -258,7 +171,7 @@ function _collect_tests() {
         # shellcheck disable=SC2178
         local -n _sut_ref="$_sut_name"
 
-        echo -e "${COLOR_CYAN}>> SUT: $_sut_name - ${#_sut_ref[@]} TCs${COLOR_RESET}"
+        echo -e "${G__COLOR_CYAN}>> SUT: $_sut_name - ${#_sut_ref[@]} TCs${G__COLOR_RESET}"
 
         for _tc_idx in "${!_sut_ref[@]}"; do
             echo "     $((_tc_idx + 1)). ${_sut_ref[$_tc_idx]}"
@@ -291,9 +204,9 @@ function _run_tests() {
         local _tc_idx
 
         echo ""
-        _lib_tests__gen_divider "$DIVIDER_H2_CHAR"
-        echo -e "${COLOR_CYAN}>> START SUT: [${_sut_no}/${_total_suts}] ${_sut_name}${COLOR_RESET}"
-        _lib_tests__gen_divider "$DIVIDER_H2_CHAR"
+        _lib_tests__gen_divider "$G__DIVIDER_H2_CHAR"
+        echo -e "${G__COLOR_CYAN}>> START SUT: [${_sut_no}/${_total_suts}] ${_sut_name}${G__COLOR_RESET}"
+        _lib_tests__gen_divider "$G__DIVIDER_H2_CHAR"
 
         for _idx in "${!_sut_ref[@]}"; do
             local _tc_name="${_sut_ref[$_idx]}"
@@ -302,7 +215,7 @@ function _run_tests() {
             local _tc_return_code
             local _tc_result_color
 
-            echo -e "${COLOR_CYAN}  ++ TC: [$((_idx + 1))/${_total_tcs}] ${_tc_name}${COLOR_RESET}"
+            echo -e "${G__COLOR_CYAN}  ++ TC: [$((_idx + 1))/${_total_tcs}] ${_tc_name}${G__COLOR_RESET}"
 
             "$_tc_name"
             _tc_return_code=$?
@@ -317,11 +230,11 @@ function _run_tests() {
                 _ret_code=1
             fi
 
-            _lib_tests__gen_divider "$DIVIDER_H3_CHAR"
+            _lib_tests__gen_divider "$G__DIVIDER_H3_CHAR"
         done
 
-        echo -e "${_sut_result_color}>> END SUT: [${_sut_no}/${_total_suts}] ${_sut_name}${COLOR_RESET}"
-        _lib_tests__gen_divider "$DIVIDER_H2_CHAR"
+        echo -e "${_sut_result_color}>> END SUT: [${_sut_no}/${_total_suts}] ${_sut_name}${G__COLOR_RESET}"
+        _lib_tests__gen_divider "$G__DIVIDER_H2_CHAR"
 
         _sut_no=$((_sut_no + 1))
     done
@@ -370,15 +283,15 @@ function _print_test_results() {
         _print_test_results__print_row
 
         if [[ $_rowx -eq 0 ]]; then
-            _lib_tests__gen_divider "$DIVIDER_H3_CHAR"
+            _lib_tests__gen_divider "$G__DIVIDER_H3_CHAR"
         else
-            _lib_tests__gen_divider "$DIVIDER_H4_CHAR"
+            _lib_tests__gen_divider "$G__DIVIDER_H4_CHAR"
         fi
     done
 
-    echo -e "Total passed: ${COLOR_GREEN}${_total_passed} TCs${COLOR_RESET}"
-    echo -e "Total failed: ${COLOR_RED}${_total_failed} TCs${COLOR_RESET}"
-    _lib_tests__gen_divider "$DIVIDER_H2_CHAR"
+    echo -e "Total passed: ${G__COLOR_GREEN}${_total_passed} TCs${G__COLOR_RESET}"
+    echo -e "Total failed: ${G__COLOR_RED}${_total_failed} TCs${G__COLOR_RESET}"
+    _lib_tests__gen_divider "$G__DIVIDER_H2_CHAR"
 }
 
 #######################################
@@ -391,18 +304,18 @@ function _print_test_results__print_summary() {
     local _fut_path="${1}"
 
     local _summary="FUT: $_fut_path"
-    local _pad_len=$(((TABLE_WIDTH - ${#_summary}) / 2))
+    local _pad_len=$(((G__TABLE_WIDTH - ${#_summary}) / 2))
 
     local _pad
     local _line
 
     _pad="$(printf "%0.s " $(seq 1 $_pad_len))"
-    _line="$(printf "%-*s" "$TABLE_WIDTH" "${_pad}${_summary}")"
+    _line="$(printf "%-*s" "$G__TABLE_WIDTH" "${_pad}${_summary}")"
 
     echo ""
-    _lib_tests__gen_divider "$DIVIDER_H2_CHAR"
-    echo "${TABLE_ROW_PREFIX}${_line}${TABLE_ROW_SUFFIX}"
-    _lib_tests__gen_divider "$DIVIDER_H2_CHAR"
+    _lib_tests__gen_divider "$G__DIVIDER_H2_CHAR"
+    echo "${G__TABLE_ROW_PREFIX}${_line}${G__TABLE_ROW_SUFFIX}"
+    _lib_tests__gen_divider "$G__DIVIDER_H2_CHAR"
 }
 
 #######################################
@@ -453,7 +366,7 @@ function _print_test_results__calc_column_widths() {
         fi
     done
 
-    _col2_width=$((TABLE_WIDTH - _col1_width - TABLE_COL_SEPARATOR_LEN))
+    _col2_width=$((G__TABLE_WIDTH - _col1_width - TABLE_COL_SEPARATOR_LEN))
     _col2_width=$((_col2_width - _col3_width - TABLE_COL_SEPARATOR_LEN))
 }
 
@@ -474,12 +387,12 @@ function _print_test_results__print_row() {
     fi
 
     _line="${_row_color}$(printf "%-*s" "$_col1_width" "$_col1_value")"
-    _line="${_line}${TABLE_COL_SEPARATOR}"
+    _line="${_line}${G__TABLE_COL_SEPARATOR}"
     _line="${_line}$(printf "%-*s" "$_col2_width" "$_col2_value")"
-    _line="${_line}${TABLE_COL_SEPARATOR}"
-    _line="${_line}$(printf "%-*s" "$_col3_width" "$_col3_value")${COLOR_RESET}"
+    _line="${_line}${G__TABLE_COL_SEPARATOR}"
+    _line="${_line}$(printf "%-*s" "$_col3_width" "$_col3_value")${G__COLOR_RESET}"
 
-    echo "${TABLE_ROW_PREFIX}${_line}${TABLE_ROW_SUFFIX}"
+    echo "${G__TABLE_ROW_PREFIX}${_line}${G__TABLE_ROW_SUFFIX}"
 }
 
 # =============================================================================
@@ -501,8 +414,8 @@ function tests__eq() {
     fi
 
     g_logging__error "Assertion failed: values are not equal"
-    g_logging__info "${COLOR_CYAN}  Expected: '${_expected}'${COLOR_RESET}"
-    g_logging__info "${COLOR_MAGENTA}    Actual: '${_actual}'${COLOR_RESET}"
+    g_logging__info "${G__COLOR_CYAN}  Expected: '${_expected}'${G__COLOR_RESET}"
+    g_logging__info "${G__COLOR_MAGENTA}    Actual: '${_actual}'${G__COLOR_RESET}"
 }
 
 # =====================================
@@ -520,8 +433,18 @@ function tests__eq() {
 #   G__ERR_MISSING_ARG: FUT was not provided.
 #######################################
 function test_main() {
+    local _dependency
+    local _dependency_path
+
+    for _dependency in "${LIB_TESTS_DEPS[@]}"; do
+        _dependency_path="$(realpath "${LIB_TESTS_PARENT_DIR}/${_dependency}")"
+
+        # shellcheck disable=SC1090,SC1091
+        source "$_dependency_path"
+    done
+
     if [[ $# -lt 1 ]]; then
-        echo -e "${COLOR_RED}Must provide FUT path"
+        echo -e "${G__COLOR_RED}Must provide FUT path"
         return "$G__ERR_MISSING_ARG"
     fi
 
@@ -531,7 +454,7 @@ function test_main() {
 
     local _ret_code
 
-    echo -e "${COLOR_BLUE}~~~~~ START TESTS ~~~~~${COLOR_RESET}"
+    echo -e "${G__COLOR_BLUE}~~~~~ START TESTS ~~~~~${G__COLOR_RESET}"
 
     _load_sut "$_fut_path" "${_fut_deps[@]}"
     _ret_code=$?
@@ -545,10 +468,10 @@ function test_main() {
     # _ret_code=$?
     # _print_test_results "$_fut_path"
 
-    echo -e "${COLOR_BLUE}~~~~~ END TESTS ~~~~~${COLOR_RESET}"
+    echo -e "${G__COLOR_BLUE}~~~~~ END TESTS ~~~~~${G__COLOR_RESET}"
 
     if [[ "$_ret_code" -ne "$G__ERR_OK" ]]; then
-        echo -e "${COLOR_RED}Unexpectedly exit with ${_ret_code}${COLOR_RESET}"
+        echo -e "${G__COLOR_RED}Unexpectedly exit with ${_ret_code}${G__COLOR_RESET}"
     fi
 
     return "$_ret_code"
