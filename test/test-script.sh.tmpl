@@ -128,10 +128,27 @@ readonly FUT_DEPENDENCY_RELATIVE_PATHS
 ##
 ##     - Docstring convention: Test case function does not have docstring.
 ##
+##     - Assertion APIs (from `test/lib-tests.sh`):
+##       - `lib_tests__sut_existence "<sut_name>"`: Verify existence of SUT
+##         before running assertions.
+##       - `lib_tests__eq "<expected>" "<actual>" "<message>"`: Value equality.
+##       - `lib_tests__error_code_eq "<expected_code>" "<actual_code>" "<message>"`:
+##         Return / exit code equality.
+##
 ##     - E.g.
 ##       ```
 ##       function tc__load_file__tc1__success() {
-##           echo "do something"
+##           local _file_path="valid_path"
+##
+##           local _stdout=""
+##           local _ret_code=$G__ERR_OK
+##
+##           lib_tests__sut_existence "script__load_file"
+##
+##           _stdout="$(script__load_file "$_file_path")"
+##           _ret_code=$?
+##           lib_tests__error_code_eq "$G__ERR_OK" "$_ret_code"
+##           lib_tests__eq "expected output" "$_stdout" "Output mismatch"
 ##       }
 ##       ```
 ##

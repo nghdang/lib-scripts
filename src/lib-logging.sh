@@ -17,7 +17,7 @@ export G__LIB_LOGGING_SH_LOADED=1
 
 # ===== File Scope =====
 
-readonly LOG_LEVEL_STRS=("DEBUG" "INFO" "WARN" "ERROR" "FATAL")
+readonly LOG_LEVEL_NAMES=("DEBUG" "INFO" "WARN" "ERROR" "FATAL")
 readonly DEFAULT_LOG_LEVEL="$G__LOG_LEVEL_INFO"
 readonly DEFAULT_STACK=0
 
@@ -67,8 +67,8 @@ function _lib_logging__write_log() {
     _message="$2"
     _stack="${3:-$DEFAULT_STACK}"
 
-    for _idx in "${!LOG_LEVEL_STRS[@]}"; do
-        if [[ "$1" == "${LOG_LEVEL_STRS[$_idx]}" ]]; then
+    for _idx in "${!LOG_LEVEL_NAMES[@]}"; do
+        if [[ "$1" == "${LOG_LEVEL_NAMES[$_idx]}" ]]; then
             _level_str="$1"
         fi
     done

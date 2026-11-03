@@ -1,1 +1,14 @@
-# Custom Dictionary Words
+# Project specific
+FUT
+FUTs
+SUT
+SUTs
+rowx
+colx
+inout
+
+# Bash
+realpath
+
+# Tooling
+shellcheck

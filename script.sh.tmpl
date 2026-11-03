@@ -69,6 +69,10 @@ export G__SCRIPT_NAME_SH_LOADED=1
 ##   Variables that shall be used by this script or other scripts.
 ##     - Naming convention: `snake_case` with prefix `g__`.
 ##
+##     - Suffix convention:
+##       - Normal variable (string, number): No suffix.
+##       - Name reference: `_ref`.
+##
 ##     - These variables shall be declared with `export`.
 ##
 ##     - E.g. `export g__project_scope_variable="example"`
@@ -79,6 +83,8 @@ export G__SCRIPT_NAME_SH_LOADED=1
 ## Explanation
 ##   Variables that shall be used by this script only.
 ##     - Naming convention: `snake_case`.
+##
+##     - Suffix convention: Same as Project Scope variables.
 ##
 ##     - E.g. `file_scope_variable="example"`
 ##
@@ -109,8 +115,17 @@ export G__SCRIPT_NAME_SH_LOADED=1
 ##         2. `# Variables`: Local variables declarations. Parameter variables
 ##            shall be on the top and other variables shall be on the bottom,
 ##            separated by a blank line.
+##            - Naming convention: `snake_case` with prefix `_`.
+##            - Suffix convention: Same as Global Variables.
 ##         3. `# Parse and validate arguments`: Argument count and value checks.
 ##         4. `# Function body`: Main execution logic and return statement.
+##
+##     - Return code convention:
+##       - Standardize on error codes defined in `src/lib-base.sh` (`G__ERR_*`).
+##       - Non-mutating functions shall return `$G__ERR_OK` directly without
+##         declaring an unused `_ret_code` variable.
+##       - Mutating functions shall initialize `local _ret_code=$G__ERR_OK`,
+##         update it as needed, and `return "$_ret_code"`.
 ##
 ##     - E.g.
 ##       ```

@@ -39,38 +39,6 @@ declare -A test_results=()
 
 # ----- Utilities -----
 
-#######################################
-# Generate a divider.
-#
-# Arguments:
-#   char [in]: Divider character to paint.
-#
-# Returns:
-#   G__ERR_OK: Divider was generated successfully.
-#   G__ERR_MISSING_ARG: Divider char was not provided.
-#   G__ERR_INVALID_ARG: Divider char is empty.
-#######################################
-function _lib_tests__gen_divider() {
-    # Constants
-
-    # Variables
-    local _char
-
-    local _placeholder
-
-    # Parse and validate arguments
-    [[ $# -eq 0 ]] && return "$G__ERR_MISSING_ARG"
-
-    _char="$1"
-    [[ -z "$_char" ]] && return "$G__ERR_INVALID_ARG"
-
-    # Function body
-    printf -v _placeholder '%*s' "$G__DIVIDER_WIDTH" ''
-    echo "${_placeholder// /$_char}"
-
-    return "$G__ERR_OK"
-}
-
 # ----- Test main breaking down functions -----
 
 #######################################
@@ -126,12 +94,12 @@ function _lib_tests__load_sut() {
     echo -e "${G__COLOR_GREEN}  >> Loaded${G__COLOR_RESET}"
 
     echo ""
-    _lib_tests__gen_divider "$G__DIVIDER_H2_CHAR"
+    lib_base__gen_divider "$G__DIVIDER_H2_CHAR"
     echo -e "${G__COLOR_BLUE}>> FUT: ${_fut_path}${G__COLOR_RESET}"
     for _fut_dep in "${_fut_deps[@]}"; do
         echo -e "${G__COLOR_GRAY}     - ${_fut_dep}${G__COLOR_RESET}"
     done
-    _lib_tests__gen_divider "$G__DIVIDER_H2_CHAR"
+    lib_base__gen_divider "$G__DIVIDER_H2_CHAR"
 
     return "$G__ERR_OK"
 }
@@ -304,9 +272,9 @@ function _lib_tests__print_summary() {
     _line="$(printf "%-*s" "$G__TABLE_WIDTH" "${_pad}${_summary}")"
 
     echo ""
-    _lib_tests__gen_divider "$G__DIVIDER_H2_CHAR"
+    lib_base__gen_divider "$G__DIVIDER_H2_CHAR"
     echo "${G__TABLE_ROW_PREFIX}${_line}${G__TABLE_ROW_SUFFIX}"
-    _lib_tests__gen_divider "$G__DIVIDER_H2_CHAR"
+    lib_base__gen_divider "$G__DIVIDER_H2_CHAR"
 
     return "$G__ERR_OK"
 }
@@ -498,19 +466,19 @@ function _lib_tests__print_test_results() {
         fi
 
         if [[ $_rowx -gt 1 ]] && [[ "$_col1_value" != "${_col1_values[$((_rowx - 1))]}" ]]; then
-            _lib_tests__gen_divider "$G__DIVIDER_H4_CHAR"
+            lib_base__gen_divider "$G__DIVIDER_H4_CHAR"
         fi
 
         _lib_tests__print_row "$_col1_value" "$_col2_value" "$_col3_value" "$_col1_width" "$_col2_width" "$_col3_width"
 
         if [[ $_rowx -eq 0 ]]; then
-            _lib_tests__gen_divider "$G__DIVIDER_H3_CHAR"
+            lib_base__gen_divider "$G__DIVIDER_H3_CHAR"
         fi
     done
-    _lib_tests__gen_divider "$G__DIVIDER_H3_CHAR"
+    lib_base__gen_divider "$G__DIVIDER_H3_CHAR"
     echo -e "Total passed: ${G__COLOR_GREEN}${_total_passed} TCs${G__COLOR_RESET}"
     echo -e "Total failed: ${G__COLOR_RED}${_total_failed} TCs${G__COLOR_RESET}"
-    _lib_tests__gen_divider "$G__DIVIDER_H2_CHAR"
+    lib_base__gen_divider "$G__DIVIDER_H2_CHAR"
 
     return "$G__ERR_OK"
 }

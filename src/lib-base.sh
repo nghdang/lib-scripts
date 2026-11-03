@@ -243,3 +243,70 @@ function lib_base__error_code_to_string() {
 
     return "$G__ERR_OK"
 }
+
+#######################################
+# Check whether the given parameter is an indexed array variable name or not.
+#
+# Arguments:
+#   var_name [in]: Name of the variable to check.
+#
+# Returns:
+#   G__ERR_OK: The given variable is an indexed array.
+#   G__ERR_NOT_OK: The given variable is not an indexed array or does not exist.
+#   G__ERR_MISSING_ARG: No variable name was provided.
+#######################################
+function lib_base__is_array() {
+    # Constants
+
+    # Variables
+    local _var_name
+
+    local _decl=""
+    local _ret_code=$G__ERR_OK
+
+    # Parse and validate arguments
+    [[ $# -lt 1 ]] && return "$G__ERR_MISSING_ARG"
+
+    _var_name="$1"
+
+    # Function body
+    _decl="$(declare -p -- "$_var_name" 2>/dev/null)" || return "$G__ERR_NOT_OK"
+
+    if [[ ! "$_decl" =~ ^declare\ -[a-z]*a[a-z]*\  ]]; then
+        _ret_code=$G__ERR_NOT_OK
+    fi
+
+    return "$_ret_code"
+}
+
+#######################################
+# Generate a divider.
+#
+# Arguments:
+#   char [in]: Divider character to paint.
+#
+# Returns:
+#   G__ERR_OK: Divider was generated successfully.
+#   G__ERR_MISSING_ARG: Divider char was not provided.
+#   G__ERR_INVALID_ARG: Divider char is empty.
+#######################################
+function lib_base__gen_divider() {
+    # Constants
+
+    # Variables
+    local _char
+
+    local _placeholder
+
+    # Parse and validate arguments
+    [[ $# -eq 0 ]] && return "$G__ERR_MISSING_ARG"
+
+    _char="$1"
+    [[ -z "$_char" ]] && return "$G__ERR_INVALID_ARG"
+
+    # Function body
+    printf -v _placeholder '%*s' "$G__DIVIDER_WIDTH" ''
+    echo "${_placeholder// /$_char}"
+
+    return "$G__ERR_OK"
+}
