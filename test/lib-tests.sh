@@ -194,6 +194,10 @@ function _lib_tests__run_tests() {
     # Parse and validate arguments
 
     # Function body
+    if [[ "$_total_suts" -eq 0 ]]; then
+        return "$G__ERR_OK"
+    fi
+
     mapfile -t _sut_names < <(printf "%s\n" "${!test_cases[@]}" | sort)
     for _sut_name in "${_sut_names[@]}"; do
         # shellcheck disable=SC2178
@@ -298,6 +302,10 @@ function _lib_tests__prepare_table_values() {
     # Parse and validate arguments
 
     # Function body
+    if [[ "${#test_cases[@]}" -eq 0 ]]; then
+        return "$G__ERR_OK"
+    fi
+
     _col1_values=("SUT")
     _col2_values=("Test Case")
     _col3_values=("Status")

@@ -6,6 +6,11 @@ SUTs
 rowx
 colx
 inout
+ncols
+iref
+ncells
+nsub
+nrows
 
 # Bash
 realpath

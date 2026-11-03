@@ -245,6 +245,36 @@ function lib_base__error_code_to_string() {
 }
 
 #######################################
+# Check whether the given parameter is a declared variable.
+#
+# Arguments:
+#   var_name [in]: Name of the variable to check.
+#
+# Returns:
+#   G__ERR_OK: The given parameter is a declared variable.
+#   G__ERR_NOT_OK: The given parameter is not a declared variable.
+#   G__ERR_MISSING_ARG: No variable name was provided.
+#######################################
+function lib_base__is_var() {
+    # Constants
+
+    # Variables
+    local _var_name
+
+    local _ret_code=$G__ERR_OK
+
+    # Parse and validate arguments
+    [[ $# -lt 1 ]] && return "$G__ERR_MISSING_ARG"
+
+    _var_name="$1"
+
+    # Function body
+    declare -p -- "$_var_name" >/dev/null 2>&1 || _ret_code=$G__ERR_NOT_OK
+
+    return "$_ret_code"
+}
+
+#######################################
 # Check whether the given parameter is an indexed array variable name or not.
 #
 # Arguments:
@@ -284,6 +314,7 @@ function lib_base__is_array() {
 #
 # Arguments:
 #   char [in]: Divider character to paint.
+#   width [in]: Divider width to paint.
 #
 # Returns:
 #   G__ERR_OK: Divider was generated successfully.
@@ -295,18 +326,70 @@ function lib_base__gen_divider() {
 
     # Variables
     local _char
+    local _width
 
     local _placeholder
 
     # Parse and validate arguments
-    [[ $# -eq 0 ]] && return "$G__ERR_MISSING_ARG"
+    [[ $# -lt 2 ]] && return "$G__ERR_MISSING_ARG"
 
     _char="$1"
     [[ -z "$_char" ]] && return "$G__ERR_INVALID_ARG"
 
+    _width="$1"
+    lib_base__is_number "$_char" || return "$G__ERR_INVALID_ARG"
+
     # Function body
-    printf -v _placeholder '%*s' "$G__DIVIDER_WIDTH" ''
+    printf -v _placeholder '%*s' "$_width" ''
     echo "${_placeholder// /$_char}"
 
     return "$G__ERR_OK"
 }
+
+#######################################
+# Check whether an array contains an item
+#
+# Arguments:
+#   array [in]: List of items, separate by space, to check.
+#   item [in]: Item to check.
+#
+# Returns:
+#   G__ERR_OK: The array contains the item.
+#   G__ERR_NOT_OK: The array does not contain the item.
+#   G__ERR_MISSING_ARG: Neither the array and the item is provided.
+#######################################
+function lib_base__is_in() {
+    # Constants
+
+    # Variables
+    local _array_str
+    local _item
+
+    local -a _array
+    local _idx
+
+    # Parse and validate arguments
+    [[ $# -lt 2 ]] && return "$G__ERR_MISSING_ARG"
+
+    _array_str="$1"
+    _item="$2"
+
+    IFS=' ' read -r -a _array <<<"$_array_str"
+
+    # Function body
+    if [[ "${#_array[@]}" -eq 0 ]]; then
+        if [[ -z "$_item" ]]; then
+            return "$G__ERR_OK"
+        else
+            return "$G__ERR_NOT_OK"
+        fi
+    fi
+
+    for _idx in "${!_array[@]}"; do
+        [[ "${_array[$_idx]}" == "$_item" ]] && return "$G__ERR_OK"
+    done
+
+    return "$G__ERR_NOT_OK"
+}
+
+lib_base__is_in "$@"
