@@ -187,7 +187,7 @@ function _lib_tests__run_tests() {
     local _total_suts="${#test_cases[@]}"
     local _sut_no=1
     local _sut_result_color="$G__COLOR_GREEN"
-    local _ret_code=$G__ERR_OK
+    local _error_code=$G__ERR_OK
     local -a _sut_names=()
     local _sut_name
 
@@ -230,7 +230,7 @@ function _lib_tests__run_tests() {
                 _tc_result_color="$G__COLOR_RED"
                 _sut_result_color="$G__COLOR_RED"
                 test_results[$_tc_name]="FAILED"
-                _ret_code=$G__ERR_NOT_OK
+                _error_code=$G__ERR_NOT_OK
             fi
         done
 
@@ -239,7 +239,7 @@ function _lib_tests__run_tests() {
         _sut_no=$((_sut_no + 1))
     done
 
-    return "$_ret_code"
+    return "$_error_code"
 }
 
 #######################################
@@ -648,7 +648,7 @@ function lib_tests__test_main() {
     local _fut_path
     local -a _fut_deps=()
 
-    local _ret_code=$G__ERR_OK
+    local _error_code=$G__ERR_OK
 
     # Parse and validate arguments
     if [[ $# -lt 1 ]]; then
@@ -664,27 +664,27 @@ function lib_tests__test_main() {
     echo -e "${G__COLOR_BLUE}~~~~~ START TESTS ~~~~~${G__COLOR_RESET}"
 
     _lib_tests__load_sut "$_fut_path" "${_fut_deps[@]}"
-    _ret_code=$?
+    _error_code=$?
 
-    if [[ "$_ret_code" -eq "$G__ERR_OK" ]]; then
+    if [[ "$_error_code" -eq "$G__ERR_OK" ]]; then
         _lib_tests__collect_tests
-        _ret_code=$?
+        _error_code=$?
     fi
 
-    if [[ "$_ret_code" -eq "$G__ERR_OK" ]]; then
+    if [[ "$_error_code" -eq "$G__ERR_OK" ]]; then
         _lib_tests__run_tests
-        _ret_code=$?
+        _error_code=$?
     fi
 
     _lib_tests__print_test_results "$_fut_path"
 
     echo -e "${G__COLOR_BLUE}~~~~~ END TESTS ~~~~~${G__COLOR_RESET}"
 
-    if [[ "$_ret_code" -ne "$G__ERR_OK" ]]; then
-        echo -e "${G__COLOR_RED}Unexpectedly exit with ${_ret_code}${G__COLOR_RESET}"
+    if [[ "$_error_code" -ne "$G__ERR_OK" ]]; then
+        echo -e "${G__COLOR_RED}Unexpectedly exit with ${_error_code}${G__COLOR_RESET}"
     fi
 
-    return "$_ret_code"
+    return "$_error_code"
 }
 
 # =============================================================================

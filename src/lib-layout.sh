@@ -2,7 +2,6 @@
 #
 # Source      : lib-layout.sh
 # Dependencies: src/lib-base.sh
-#               src/lib-logging.sh
 # Description : General utility for drawing on terminal.
 #
 
@@ -52,7 +51,7 @@ function lib_layout__draw_table_with_summary() {
     local _suffix="$G__TABLE_ROW_SUFFIX"
     local _align="$G__TABLE_ALIGN_LEFT"
 
-    local _ret_code="$G__ERR_OK"
+    local _error_code="$G__ERR_OK"
     local _divider_h2
 
     # Parse and validate arguments
@@ -89,23 +88,23 @@ function lib_layout__draw_table_with_summary() {
     lib_base__is_number "$_width" || return "$G__ERR_TYPE_ERROR"
     lib_base__is_in "${TABLE_ALIGNS[*]}" "$_align" || return "$G__ERR_TYPE_ERROR"
 
-    lib_logging__debug "Summary: '$_summary'"
-    lib_logging__debug "Width: '$_width'"
-    lib_logging__debug "Prefix: '$_prefix'"
-    lib_logging__debug "Suffix: '$_suffix'"
-    lib_logging__debug "Align: '$_align'"
+    lib_base__debug "Summary: '$_summary'"
+    lib_base__debug "Width: '$_width'"
+    lib_base__debug "Prefix: '$_prefix'"
+    lib_base__debug "Suffix: '$_suffix'"
+    lib_base__debug "Align: '$_align'"
 
     # Function body
     _divider_h2="$(lib_base__gen_divider "$G__DIVIDER_H2_CHAR")"
-    _ret_code=$?
+    _error_code=$?
 
-    if [[ "$G__ERR_OK" -eq "$_ret_code" ]]; then
-        lib_logging__info "$_divider_h2"
-        # lib_logging__info "$_summary"
-        # lib_logging__info "$(lib_base__gen_divider "$G__DIVIDER_H2_CHAR")"
+    if [[ "$G__ERR_OK" -eq "$_error_code" ]]; then
+        lib_base__info "$_divider_h2"
+        # lib_base__info "$_summary"
+        # lib_base__info "$(lib_base__gen_divider "$G__DIVIDER_H2_CHAR")"
     fi
 
-    return "$_ret_code"
+    return "$_error_code"
 }
 
 # =============================================================================
@@ -120,14 +119,8 @@ function main() {
     LIB_BASE_PATH="$(realpath "${LIB_LAYOUT_PARENT_DIR}/../src/lib-base.sh")"
     readonly LIB_BASE_PATH
 
-    LIB_LOGGING_PATH="$(realpath "${LIB_LAYOUT_PARENT_DIR}/../src/lib-logging.sh")"
-    readonly LIB_LOGGING_PATH
-
     # shellcheck disable=SC1090,SC1091
     source "$LIB_BASE_PATH"
-
-    # shellcheck disable=SC1090,SC1091
-    source "$LIB_LOGGING_PATH"
 
     lib_layout__draw_table_with_summary "$@"
     ec=$?

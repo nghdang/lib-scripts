@@ -141,13 +141,13 @@ readonly FUT_DEPENDENCY_RELATIVE_PATHS
 ##           local _file_path="valid_path"
 ##
 ##           local _stdout=""
-##           local _ret_code=$G__ERR_OK
+##           local _error_code=$G__ERR_OK
 ##
 ##           lib_tests__sut_existence "script__load_file"
 ##
 ##           _stdout="$(script__load_file "$_file_path")"
-##           _ret_code=$?
-##           lib_tests__error_code_eq "$G__ERR_OK" "$_ret_code"
+##           _error_code=$?
+##           lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
 ##           lib_tests__eq "expected output" "$_stdout" "Output mismatch"
 ##       }
 ##       ```

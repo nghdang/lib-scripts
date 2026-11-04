@@ -2,7 +2,6 @@
 #
 # Source      : src/lib-utils.sh
 # Dependencies: src/lib-base.sh
-#               src/lib-logging.sh
 # Description : General utility helpers for cross-projects.
 #
 
@@ -58,8 +57,8 @@ function _lib_utils__print_table_summary() {
     # Function body
     _divider_h2="$(lib_base__gen_divider "$G__DIVIDER_H2_CHAR")"
 
-    lib_logging__info "" "$_log_stack"
-    lib_logging__info "$_divider_h2" "$_log_stack"
+    lib_base__info "" "$_log_stack"
+    lib_base__info "$_divider_h2" "$_log_stack"
 
     if [[ -z "$_summary" ]]; then
         return "$G__ERR_OK"
@@ -71,8 +70,8 @@ function _lib_utils__print_table_summary() {
     fi
     _line="$(printf "%-*s" "$G__TABLE_WIDTH" "${_pad}${_summary}")"
 
-    lib_logging__info "${G__TABLE_ROW_PREFIX}${_line}${G__TABLE_ROW_SUFFIX}" "$_log_stack"
-    lib_logging__info "$_divider_h2" "$_log_stack"
+    lib_base__info "${G__TABLE_ROW_PREFIX}${_line}${G__TABLE_ROW_SUFFIX}" "$_log_stack"
+    lib_base__info "$_divider_h2" "$_log_stack"
 
     return "$G__ERR_OK"
 }
@@ -258,7 +257,7 @@ function _lib_utils__print_table_print_row() {
             fi
         done
 
-        lib_logging__info "${G__TABLE_ROW_PREFIX}${_line}${G__TABLE_ROW_SUFFIX}" "$_log_stack"
+        lib_base__info "${G__TABLE_ROW_PREFIX}${_line}${G__TABLE_ROW_SUFFIX}" "$_log_stack"
     done
 
     return "$G__ERR_OK"
@@ -375,15 +374,15 @@ function lib_utils__print_table() {
     for _rowx in $(seq 0 $((_nrows - 1))); do
         if [[ $_rowx -eq 0 ]]; then
             if [[ $_has_header -ne 0 ]]; then
-                lib_logging__info "$_divider_h3" $((_log_stack - 1))
+                lib_base__info "$_divider_h3" $((_log_stack - 1))
             fi
         else
-            lib_logging__info "$_divider_h4" $((_log_stack - 1))
+            lib_base__info "$_divider_h4" $((_log_stack - 1))
         fi
 
         _lib_utils__print_table_print_row -w "_col_widths" -s "$_log_stack" "${_rows_ref[@]:_rowx*_ncols:_ncols}"
     done
-    lib_logging__info "$_divider_h2" $((_log_stack - 1))
+    lib_base__info "$_divider_h2" $((_log_stack - 1))
 
     return "$G__ERR_OK"
 }
@@ -477,7 +476,7 @@ function lib_utils__run_command() {
     local _stdout_var_name
 
     local -n _stdout_ref
-    local _ret_code=$G__ERR_OK
+    local _error_code=$G__ERR_OK
 
     # Parse and validate arguments
     [[ $# -lt 1 ]] && return "$G__ERR_MISSING_ARG"
@@ -496,15 +495,15 @@ function lib_utils__run_command() {
     if [[ -z "${DRY_RUN:-}" ]]; then
         if [[ -n "$_stdout_var_name" ]]; then
             _stdout_ref="$(eval "$_cmd")"
-            _ret_code=$?
+            _error_code=$?
         else
             eval "$_cmd"
-            _ret_code=$?
+            _error_code=$?
         fi
     else
-        lib_logging__info "Running: $_cmd" 2
-        _ret_code=$?
+        lib_base__info "Running: $_cmd" 2
+        _error_code=$?
     fi
 
-    return "$_ret_code"
+    return "$_error_code"
 }

@@ -20,10 +20,8 @@ lib-scripts/
 ├── script.sh.tmpl              # Canonical template for library scripts
 ├── src/
 │   ├── lib-base.sh             # Base constants, error codes, and utilities (zero dependencies)
-│   └── lib-logging.sh          # Leveled logging library (depends on src/lib-base.sh)
 └── test/
     ├── lib-tests.sh            # Lightweight unit testing framework (depends on src/lib-base.sh)
-    ├── test-lib-logging.sh     # Unit test suite for src/lib-logging.sh
     └── test-script.sh.tmpl     # Canonical template for test suites
 ```
 
@@ -33,7 +31,6 @@ lib-scripts/
 
 1. **Strict Dependency Hierarchy**:
    - `src/lib-base.sh` must remain dependency-free (`Dependencies: None`).
-   - `src/lib-logging.sh` depends solely on `src/lib-base.sh`.
    - `test/lib-tests.sh` depends solely on `src/lib-base.sh`.
 2. **No Backward Compatibility**:
    - Do not maintain backward compatibility, legacy shims, wrappers, or aliases.

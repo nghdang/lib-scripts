@@ -24,7 +24,6 @@ readonly FUT_RELATIVE_PATH
 
 FUT_DEPENDENCY_RELATIVE_PATHS=(
     "../src/lib-base.sh"
-    "../src/lib-logging.sh"
 )
 readonly FUT_DEPENDENCY_RELATIVE_PATHS
 
@@ -54,76 +53,76 @@ readonly FUT_DEPENDENCY_RELATIVE_PATHS
 
 function tc__find_max_len__tc1__missing_items() {
     local _stdout=""
-    local _ret_code="$G__ERR_OK"
+    local _error_code="$G__ERR_OK"
 
     lib_tests__sut_existence "lib_utils__find_max_len"
 
     _stdout="$(lib_utils__find_max_len)"
-    _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_MISSING_ARG" "$_ret_code"
+    _error_code=$?
+    lib_tests__error_code_eq "$G__ERR_MISSING_ARG" "$_error_code"
     lib_tests__eq "" "$_stdout" "Expected empty STDOUT: '$_stdout'"
 }
 
 function tc__find_max_len__tc2__single_empty_string() {
     local _stdout=""
-    local _ret_code="$G__ERR_OK"
+    local _error_code="$G__ERR_OK"
 
     lib_tests__sut_existence "lib_utils__find_max_len"
 
     _stdout="$(lib_utils__find_max_len "")"
-    _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_ret_code"
+    _error_code=$?
+    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
     lib_tests__eq "0" "$_stdout" "Expected max length '0', got '$_stdout'"
 }
 
 function tc__find_max_len__tc3__single_string() {
     local _stdout=""
-    local _ret_code="$G__ERR_OK"
+    local _error_code="$G__ERR_OK"
 
     lib_tests__sut_existence "lib_utils__find_max_len"
 
     _stdout="$(lib_utils__find_max_len "abc")"
-    _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_ret_code"
+    _error_code=$?
+    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
     lib_tests__eq "3" "$_stdout" "Expected max length '3', got '$_stdout'"
 }
 
 function tc__find_max_len__tc4__multiple_strings_distinct_lengths() {
     local -a _items=("a" "abc" "ab")
     local _stdout=""
-    local _ret_code="$G__ERR_OK"
+    local _error_code="$G__ERR_OK"
 
     lib_tests__sut_existence "lib_utils__find_max_len"
 
     _stdout="$(lib_utils__find_max_len "${_items[@]}")"
-    _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_ret_code"
+    _error_code=$?
+    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
     lib_tests__eq "3" "$_stdout" "Expected max length '3', got '$_stdout'"
 }
 
 function tc__find_max_len__tc5__multiple_strings_equal_max_length() {
     local -a _items=("foo" "bar" "ox")
     local _stdout=""
-    local _ret_code="$G__ERR_OK"
+    local _error_code="$G__ERR_OK"
 
     lib_tests__sut_existence "lib_utils__find_max_len"
 
     _stdout="$(lib_utils__find_max_len "${_items[@]}")"
-    _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_ret_code"
+    _error_code=$?
+    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
     lib_tests__eq "3" "$_stdout" "Expected max length '3', got '$_stdout'"
 }
 
 function tc__find_max_len__tc6__strings_with_spaces() {
     local -a _items=("hello world" "hi")
     local _stdout=""
-    local _ret_code="$G__ERR_OK"
+    local _error_code="$G__ERR_OK"
 
     lib_tests__sut_existence "lib_utils__find_max_len"
 
     _stdout="$(lib_utils__find_max_len "${_items[@]}")"
-    _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_ret_code"
+    _error_code=$?
+    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
     lib_tests__eq "11" "$_stdout" "Expected max length '11', got '$_stdout'"
 }
 
@@ -143,26 +142,26 @@ function tc__find_max_len__tc6__strings_with_spaces() {
 
 function tc__run_command__tc1__missing_cmd() {
     local _stdout=""
-    local _ret_code="$G__ERR_OK"
+    local _error_code="$G__ERR_OK"
 
     lib_tests__sut_existence "lib_utils__run_command"
 
     _stdout="$(lib_utils__run_command)"
-    _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_MISSING_ARG" "$_ret_code"
+    _error_code=$?
+    lib_tests__error_code_eq "$G__ERR_MISSING_ARG" "$_error_code"
     lib_tests__eq "" "$_stdout" "Expected empty STDOUT: '$_stdout'"
 }
 
 function tc__run_command__tc2__invalid_stdout_var_name() {
     local _cmd="echo 'test'"
     local _stdout=""
-    local _ret_code="$G__ERR_OK"
+    local _error_code="$G__ERR_OK"
 
     lib_tests__sut_existence "lib_utils__run_command"
 
     _stdout="$(lib_utils__run_command "$_cmd" "invalid-var-name")"
-    _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_TYPE_ERROR" "$_ret_code"
+    _error_code=$?
+    lib_tests__error_code_eq "$G__ERR_TYPE_ERROR" "$_error_code"
     lib_tests__eq "" "$_stdout" "Expected empty STDOUT: '$_stdout'"
 }
 
@@ -170,7 +169,7 @@ function tc__run_command__tc3__success_without_stdout_var() {
     local _cmd="echo 'test output'"
     local _expected_stdout="test output"
     local _stdout=""
-    local _ret_code="$G__ERR_OK"
+    local _error_code="$G__ERR_OK"
 
     lib_tests__sut_existence "lib_utils__run_command"
 
@@ -178,8 +177,8 @@ function tc__run_command__tc3__success_without_stdout_var() {
         unset DRY_RUN
         lib_utils__run_command "$_cmd"
     )"
-    _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_ret_code"
+    _error_code=$?
+    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
     lib_tests__eq "$_expected_stdout" "$_stdout" "STDOUT mismatch: '$_stdout'"
 }
 
@@ -187,7 +186,7 @@ function tc__run_command__tc4__failure_without_stdout_var() {
     local _cmd="(exit 42)"
     local _expected_code=42
     local _stdout=""
-    local _ret_code="$G__ERR_OK"
+    local _error_code="$G__ERR_OK"
 
     lib_tests__sut_existence "lib_utils__run_command"
 
@@ -195,8 +194,8 @@ function tc__run_command__tc4__failure_without_stdout_var() {
         unset DRY_RUN
         lib_utils__run_command "$_cmd"
     )"
-    _ret_code=$?
-    lib_tests__error_code_eq "$_expected_code" "$_ret_code"
+    _error_code=$?
+    lib_tests__error_code_eq "$_expected_code" "$_error_code"
     lib_tests__eq "" "$_stdout" "Expected empty STDOUT: '$_stdout'"
 }
 
@@ -204,14 +203,14 @@ function tc__run_command__tc5__success_with_stdout_var() {
     local _cmd="echo 'captured output'"
     local _expected_output="captured output"
     local _captured="initial_value"
-    local _ret_code="$G__ERR_OK"
+    local _error_code="$G__ERR_OK"
 
     lib_tests__sut_existence "lib_utils__run_command"
 
     unset DRY_RUN
     lib_utils__run_command "$_cmd" "_captured"
-    _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_ret_code"
+    _error_code=$?
+    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
     lib_tests__eq "$_expected_output" "$_captured" "Captured output mismatch: '$_captured'"
 }
 
@@ -220,14 +219,14 @@ function tc__run_command__tc6__failure_with_stdout_var() {
     local _expected_output="failure output"
     local _expected_code=42
     local _captured="initial_value"
-    local _ret_code="$G__ERR_OK"
+    local _error_code="$G__ERR_OK"
 
     lib_tests__sut_existence "lib_utils__run_command"
 
     unset DRY_RUN
     lib_utils__run_command "$_cmd" "_captured"
-    _ret_code=$?
-    lib_tests__error_code_eq "$_expected_code" "$_ret_code"
+    _error_code=$?
+    lib_tests__error_code_eq "$_expected_code" "$_error_code"
     lib_tests__eq "$_expected_output" "$_captured" "Captured output mismatch: '$_captured'"
 }
 
@@ -235,17 +234,17 @@ function tc__run_command__tc7__dry_run_without_stdout_var() {
     local _cmd="(exit 42)"
     local _expected_log="Running: (exit 42)"
     local _stdout=""
-    local _ret_code="$G__ERR_OK"
+    local _error_code="$G__ERR_OK"
 
     lib_tests__sut_existence "lib_utils__run_command"
 
     _stdout="$(DRY_RUN=1 lib_utils__run_command "$_cmd")"
-    _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_ret_code"
+    _error_code=$?
+    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
 
     echo "$_stdout" | grep -F "$_expected_log"
-    _ret_code=$?
-    lib_tests__eq "$G__ERR_OK" "$_ret_code" "Expected log message '$_expected_log' in STDOUT: '$_stdout'"
+    _error_code=$?
+    lib_tests__eq "$G__ERR_OK" "$_error_code" "Expected log message '$_expected_log' in STDOUT: '$_stdout'"
 }
 
 function tc__run_command__tc8__dry_run_with_stdout_var() {
@@ -253,22 +252,22 @@ function tc__run_command__tc8__dry_run_with_stdout_var() {
     local _expected_log="Running: (exit 42)"
     local _captured="initial_value"
     local _stdout=""
-    local _ret_code="$G__ERR_OK"
+    local _error_code="$G__ERR_OK"
 
     lib_tests__sut_existence "lib_utils__run_command"
 
     export DRY_RUN=1
     _stdout="$(lib_utils__run_command "$_cmd" "_captured")"
-    _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_ret_code"
+    _error_code=$?
+    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
 
     echo "$_stdout" | grep -F "$_expected_log"
-    _ret_code=$?
-    lib_tests__eq "$G__ERR_OK" "$_ret_code" "Expected log message '$_expected_log' in STDOUT: '$_stdout'"
+    _error_code=$?
+    lib_tests__eq "$G__ERR_OK" "$_error_code" "Expected log message '$_expected_log' in STDOUT: '$_stdout'"
 
     lib_utils__run_command "$_cmd" "_captured" >/dev/null
-    _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_ret_code"
+    _error_code=$?
+    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
     lib_tests__eq "" "$_captured" "Expected empty captured variable: '$_captured'"
 }
 

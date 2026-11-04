@@ -149,9 +149,9 @@ declare -rx G__SCRIPT_NAME_SH_LOADED=1
 ##     - Return code convention:
 ##       - Standardize on error codes defined in `src/lib-base.sh` (`G__ERR_*`).
 ##       - Non-mutating functions shall return `$G__ERR_OK` directly without
-##         declaring an unused `_ret_code` variable.
-##       - Mutating functions shall initialize `local _ret_code=$G__ERR_OK`,
-##         update it as needed, and `return "$_ret_code"`.
+##         declaring an unused `_error_code` variable.
+##       - Mutating functions shall initialize `local _error_code=$G__ERR_OK`,
+##         update it as needed, and `return "$_error_code"`.
 ##
 
 #region _module_name__private_function_name
@@ -173,7 +173,7 @@ function _module_name__private_function_name() {
     # Variables
     local _file_path
 
-    local _ret_code="$G__ERR_OK"
+    local _error_code="$G__ERR_OK"
 
     # Parse and validate arguments
     [[ $# -lt 1 ]] && return "$G__ERR_MISSING_ARG"
@@ -182,10 +182,10 @@ function _module_name__private_function_name() {
 
     # Function body
     if [[ ! -f "$_file_path" ]]; then
-        _ret_code="$G__ERR_NOT_FILE"
+        _error_code="$G__ERR_NOT_FILE"
     fi
 
-    return "$_ret_code"
+    return "$_error_code"
 }
 
 #endregion Private Functions
@@ -223,7 +223,7 @@ function module_name__public_function_name() {
     # Variables
     local _file_path
 
-    local _ret_code="$G__ERR_OK"
+    local _error_code="$G__ERR_OK"
 
     # Parse and validate arguments
     [[ $# -lt 1 ]] && return "$G__ERR_MISSING_ARG"
@@ -232,10 +232,10 @@ function module_name__public_function_name() {
 
     # Function body
     if [[ ! -f "$_file_path" ]]; then
-        _ret_code="$G__ERR_NOT_FILE"
+        _error_code="$G__ERR_NOT_FILE"
     fi
 
-    return "$_ret_code"
+    return "$_error_code"
 }
 
 #endregion Public Functions

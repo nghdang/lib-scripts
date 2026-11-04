@@ -21,7 +21,6 @@ declare -rx G__LIB_BASE_SH_LOADED=1
 # ===== Project Scope =====
 
 # ----- Terminal & UI Styling -----
-# ANSI escape sequences for terminal output colors
 declare -rx G__COLOR_RED=$'\033[0;31m'
 declare -rx G__COLOR_GREEN=$'\033[0;32m'
 declare -rx G__COLOR_YELLOW=$'\033[0;33m'
@@ -30,6 +29,48 @@ declare -rx G__COLOR_MAGENTA=$'\033[0;35m'
 declare -rx G__COLOR_CYAN=$'\033[0;36m'
 declare -rx G__COLOR_GRAY=$'\033[0;37m'
 declare -rx G__COLOR_RESET=$'\033[0m'
+
+# ----- Error Codes -----
+# Positive error codes
+declare -rx G__ERR_OK=0
+declare -rx G__ERR_NOT_OK=255
+
+# Arguments error codes
+declare -rx G__ERR_MISSING_ARG=10
+declare -rx G__ERR_TYPE_ERROR=11
+
+# File system error codes
+declare -rx G__ERR_NOT_FOUND=20
+declare -rx G__ERR_ALREADY_EXISTS=21
+declare -rx G__ERR_NOT_FILE=22
+declare -rx G__ERR_NOT_DIR=23
+declare -rx G__ERR_READ_FAILED=24
+declare -rx G__ERR_WRITE_FAILED=25
+
+declare -rAx G__ERR_NAMES=(
+    # Positive error codes
+    [$G__ERR_OK]="ERR_OK"
+    [$G__ERR_NOT_OK]="ERR_NOT_OK"
+
+    # Arguments error codes
+    [$G__ERR_MISSING_ARG]="ERR_MISSING_ARG"
+    [$G__ERR_TYPE_ERROR]="G__ERR_TYPE_ERROR"
+
+    # File system error codes
+    [$G__ERR_NOT_FOUND]="ERR_NOT_FOUND"
+    [$G__ERR_ALREADY_EXISTS]="ERR_ALREADY_EXISTS"
+    [$G__ERR_NOT_FILE]="ERR_NOT_FILE"
+    [$G__ERR_NOT_DIR]="ERR_NOT_DIR"
+    [$G__ERR_READ_FAILED]="ERR_READ_FAILED"
+    [$G__ERR_WRITE_FAILED]="ERR_WRITE_FAILED"
+)
+
+# ----- Logging -----
+declare -rx G__LOG_LEVEL_DEBUG=0
+declare -rx G__LOG_LEVEL_INFO=1
+declare -rx G__LOG_LEVEL_WARN=2
+declare -rx G__LOG_LEVEL_ERROR=3
+declare -rx G__LOG_LEVEL_FATAL=4
 
 # ----- Layout & Table Formatting -----
 # Terminal heading dividers and line width
@@ -54,53 +95,14 @@ G__TABLE_WIDTH=$((G__DIVIDER_WIDTH - G__TABLE_ROW_PREFIX_LEN))
 G__TABLE_WIDTH=$((G__TABLE_WIDTH - G__TABLE_ROW_SUFFIX_LEN))
 declare -rx G__TABLE_WIDTH
 
-# ----- Error Codes -----
-# Positive error codes
-declare -rx G__ERR_OK=0
-declare -rx G__ERR_NOT_OK=255
-
-# Arguments error codes
-declare -rx G__ERR_MISSING_ARG=10
-declare -rx G__ERR_TYPE_ERROR=11
-
-# File system error codes
-declare -rx G__ERR_NOT_FOUND=20
-declare -rx G__ERR_ALREADY_EXISTS=21
-declare -rx G__ERR_NOT_FILE=22
-declare -rx G__ERR_NOT_DIR=23
-declare -rx G__ERR_READ_FAILED=24
-declare -rx G__ERR_WRITE_FAILED=25
-
-# ----- Error Codes -----
-declare -rAx G__ERR_NAMES=(
-    # Positive error codes
-    [$G__ERR_OK]="ERR_OK"
-    [$G__ERR_NOT_OK]="ERR_NOT_OK"
-
-    # Arguments error codes
-    [$G__ERR_MISSING_ARG]="ERR_MISSING_ARG"
-    [$G__ERR_TYPE_ERROR]="G__ERR_TYPE_ERROR"
-
-    # File system error codes
-    [$G__ERR_NOT_FOUND]="ERR_NOT_FOUND"
-    [$G__ERR_ALREADY_EXISTS]="ERR_ALREADY_EXISTS"
-    [$G__ERR_NOT_FILE]="ERR_NOT_FILE"
-    [$G__ERR_NOT_DIR]="ERR_NOT_DIR"
-    [$G__ERR_READ_FAILED]="ERR_READ_FAILED"
-    [$G__ERR_WRITE_FAILED]="ERR_WRITE_FAILED"
-)
-
-# ----- Logging level -----
-declare -rx G__LOG_LEVEL_DEBUG=0
-declare -rx G__LOG_LEVEL_INFO=1
-declare -rx G__LOG_LEVEL_WARN=2
-declare -rx G__LOG_LEVEL_ERROR=3
-declare -rx G__LOG_LEVEL_FATAL=4
-
 #endregion Global Constants - Project Scope
 
 #region Global Constants - File Scope
 # ===== File Scope =====
+# ----- Logging -----
+readonly LOG_LEVEL_NAMES=("DEBUG" "INFO" "WARN" "ERROR" "FATAL")
+readonly DEFAULT_LOG_LEVEL="$G__LOG_LEVEL_INFO"
+readonly DEFAULT_STACK=1
 
 #endregion Global Constants - File Scope
 #endregion Global Constants
@@ -125,6 +127,67 @@ declare -rx G__LOG_LEVEL_FATAL=4
 # =============================================================================
 # Private Functions
 # =============================================================================
+#region _lib_base__write_log
+#######################################
+# Write a formatted log message to STDOUT.
+#
+# Arguments:
+#   level_str [in]: Log level string (e.g., "DEBUG", "INFO", "WARN", "ERROR", "FATAL").
+#   message   [in]: Message text to print.
+#   stack     [in]: (optional) Stack depth. Defaults to 0.
+#
+# Outputs:
+#   Formatted log message.
+#
+# Returns:
+#   G__ERR_OK: Log message was printed successfully.
+#
+# Exits:
+#   G__ERR_MISSING_ARG: Fewer than 2 arguments were provided.
+#   G__ERR_TYPE_ERROR: Invalid log level string or stack level number.
+#######################################
+#endregion _lib_base__write_log
+function _lib_base__write_log() {
+    # Constants
+
+    # Variables
+    local _level_str
+    local _message
+    local _stack
+
+    local _timestamp
+    local _caller_path
+    local _caller_name
+    local _func_name
+    local _line_no
+    local _context
+
+    # Parse and validate arguments
+    lib_base__assert_min_args "$#" "2"
+
+    _level_str="$1"
+    _message="$2"
+    _stack="${3:-$DEFAULT_STACK}"
+
+    lib_base__assert_in "${LOG_LEVEL_NAMES[*]}" "$_level_str"
+    lib_base__assert_number "$_stack" "Log stack level"
+
+    # Function body
+    _timestamp="$(date +"%Y-%m-%d %H:%M:%S")"
+
+    _caller_path="${BASH_SOURCE[$((_stack + 1))]:-unknown}"
+    _caller_name="${_caller_path##*/}"
+
+    _func_name="${FUNCNAME[$((_stack + 1))]:-unknown}"
+
+    _line_no="${BASH_LINENO[$_stack]:-0}"
+
+    _context="$_timestamp $(printf '%5s' "$_level_str")"
+    _context="$_context $_caller_name ${_func_name}:${_line_no}"
+    printf '%s %b\n' "$_context" "$_message"
+
+    return "$G__ERR_OK"
+}
 
 #endregion Private Functions
 
@@ -568,6 +631,201 @@ function lib_base__assert_min_args() {
     fi
 
     return "$G__ERR_OK"
+}
+
+# ----- Logging -----
+#region lib_base__debug
+#######################################
+# Log a debug message to STDOUT.
+#
+# Arguments:
+#   message [in]: Message text to print.
+#   stack   [in]: (optional) Stack depth. Defaults to 0.
+#
+# Outputs:
+#   Formatted debug log message.
+#
+# Returns:
+#   G__ERR_OK: Log message was printed successfully.
+#
+# Exits:
+#   G__ERR_MISSING_ARG: Log message was not provided.
+#   G__ERR_TYPE_ERROR: Invalid stack level number.
+#######################################
+#endregion lib_base__debug
+function lib_base__debug() {
+    # Constants
+
+    # Variables
+    local _message
+    local _stack
+
+    local _error_code="$G__ERR_OK"
+    local _level="${LOG_LEVEL:-$DEFAULT_LOG_LEVEL}"
+
+    # Parse and validate arguments
+    lib_base__assert_min_args "$#" "1"
+
+    _message="$1"
+    _stack="${2:-$DEFAULT_STACK}"
+
+    lib_base__assert_number "$_stack"
+
+    # Function body
+    lib_base__is_number "$_level" || _level="$DEFAULT_LOG_LEVEL"
+
+    if [[ "$_level" -le "$G__LOG_LEVEL_DEBUG" ]]; then
+        _lib_base__write_log "DEBUG" "$_message" "$_stack"
+        _error_code=$?
+    fi
+
+    return "$_error_code"
+}
+
+#region lib_base__info
+#######################################
+# Log an info message to STDOUT.
+#
+# Arguments:
+#   message [in]: Message text to print.
+#   stack   [in]: (optional) Stack depth. Defaults to 0.
+#
+# Outputs:
+#   Formatted info log message.
+#
+# Returns:
+#   G__ERR_OK: Log message was printed successfully.
+#
+# Exits:
+#   G__ERR_MISSING_ARG: Log message was not provided.
+#   G__ERR_TYPE_ERROR: Invalid stack level number.
+#######################################
+#endregion lib_base__info
+function lib_base__info() {
+    # Constants
+
+    # Variables
+    local _message
+    local _stack
+
+    local _error_code="$G__ERR_OK"
+    local _level="${LOG_LEVEL:-$DEFAULT_LOG_LEVEL}"
+
+    # Parse and validate arguments
+    lib_base__assert_min_args "$#" "1"
+
+    _message="$1"
+    _stack="${2:-$DEFAULT_STACK}"
+
+    lib_base__assert_number "$_stack"
+
+    # Function body
+    lib_base__is_number "$_level" || _level="$DEFAULT_LOG_LEVEL"
+
+    if [[ "$_level" -le "$G__LOG_LEVEL_INFO" ]]; then
+        _lib_base__write_log "INFO" "$_message" "$_stack"
+        _error_code=$?
+    fi
+
+    return "$_error_code"
+}
+
+#region lib_base__warn
+#######################################
+# Log a warning message to STDOUT with yellow color.
+#
+# Arguments:
+#   message [in]: Message text to print.
+#   stack   [in]: (optional) Stack depth. Defaults to 0.
+#
+# Outputs:
+#   Formatted warning log message.
+#
+# Returns:
+#   G__ERR_OK: Log message was printed successfully.
+#
+# Exits:
+#   G__ERR_MISSING_ARG: Log message was not provided.
+#   G__ERR_TYPE_ERROR: Invalid stack level number.
+#######################################
+#endregion lib_base__warn
+function lib_base__warn() {
+    # Constants
+
+    # Variables
+    local _message
+    local _stack
+
+    local _error_code="$G__ERR_OK"
+    local _level="${LOG_LEVEL:-$DEFAULT_LOG_LEVEL}"
+
+    # Parse and validate arguments
+    lib_base__assert_min_args "$#" "1"
+
+    _message="$1"
+    _stack="${2:-$DEFAULT_STACK}"
+
+    lib_base__assert_number "$_stack"
+
+    # Function body
+    lib_base__is_number "$_level" || _level="$DEFAULT_LOG_LEVEL"
+
+    if [[ "$_level" -le "$G__LOG_LEVEL_WARN" ]]; then
+        _message="${G__COLOR_YELLOW}${_message}${G__COLOR_RESET}"
+        _lib_base__write_log "WARN" "$_message" "$_stack"
+        _error_code=$?
+    fi
+
+    return "$_error_code"
+}
+
+#region lib_base__error
+#######################################
+# Log an error message to STDOUT with red color.
+#
+# Arguments:
+#   message [in]: Message text to print.
+#   stack   [in]: (optional) Stack depth. Defaults to 0.
+#
+# Outputs:
+#   Formatted error log message.
+#
+# Returns:
+#   G__ERR_OK: Log message was printed successfully.
+#
+# Exits:
+#   G__ERR_MISSING_ARG: Log message was not provided.
+#   G__ERR_TYPE_ERROR: Invalid stack level number.
+#######################################
+#endregion lib_base__error
+function lib_base__error() {
+    # Constants
+
+    # Variables
+    local _message
+    local _stack
+
+    local _error_code="$G__ERR_OK"
+    local _level="${LOG_LEVEL:-$DEFAULT_LOG_LEVEL}"
+
+    # Parse and validate arguments
+    lib_base__assert_min_args "$#" "1"
+
+    _message="$1"
+    _stack="${2:-$DEFAULT_STACK}"
+
+    lib_base__assert_number "$_stack"
+
+    # Function body
+    lib_base__is_number "$_level" || _level="$DEFAULT_LOG_LEVEL"
+
+    if [[ "$_level" -le "$G__LOG_LEVEL_ERROR" ]]; then
+        _message="${G__COLOR_RED}${_message}${G__COLOR_RESET}"
+        _lib_base__write_log "ERROR" "$_message" "$_stack"
+        _error_code=$?
+    fi
+
+    return "$_error_code"
 }
 
 # ----- Layout & Table Formatting -----
