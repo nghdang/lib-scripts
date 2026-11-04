@@ -541,7 +541,7 @@ function lib_tests__sut_existence() {
 # Returns:
 #   G__ERR_OK: Expected code and actual code are equal.
 #   G__ERR_MISSING_ARG: Expected or actual code was not provided.
-#   G__ERR_INVALID_ARG: Expected or actual code was not a number.
+#   G__ERR_TYPE_ERROR: Expected or actual code was not a number.
 #   G__ERR_NOT_OK: Error codes are not equal.
 #######################################
 function lib_tests__error_code_eq() {
@@ -565,12 +565,12 @@ function lib_tests__error_code_eq() {
 
     if [[ ! "$_expected" =~ ^0*[0-9][0-9]*$ ]]; then
         echo -e "${G__COLOR_RED}[FATAL] Expected code must be a number${G__COLOR_RESET}" >&2
-        exit "$G__ERR_INVALID_ARG"
+        exit "$G__ERR_TYPE_ERROR"
     fi
 
     if [[ ! "$_actual" =~ ^0*[0-9][0-9]*$ ]]; then
         echo -e "${G__COLOR_RED}[FATAL] Actual code must be a number${G__COLOR_RESET}" >&2
-        exit "$G__ERR_INVALID_ARG"
+        exit "$G__ERR_TYPE_ERROR"
     fi
 
     # Function body
@@ -578,8 +578,8 @@ function lib_tests__error_code_eq() {
         return "$G__ERR_OK"
     fi
 
-    _expected_str="$(lib_base__error_code_to_string "$_expected")"
-    _actual_str="$(lib_base__error_code_to_string "$_actual")"
+    _expected_str="$(ERR_NAMES "$_expected")"
+    _actual_str="$(ERR_NAMES "$_actual")"
 
     echo -e "${G__COLOR_RED}[ERROR] Assertion failed: error codes are not equal${G__COLOR_RESET}" >&2
     echo -e "${G__COLOR_CYAN}  Expected: '${_expected_str}'${G__COLOR_RESET}" >&2

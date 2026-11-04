@@ -73,9 +73,9 @@ readonly PASSED="PASSED"
 readonly FAILED="FAILED"
 
 # ----- Error Codes -----
-readonly G__ERR_OK=0
-readonly G__ERR_NOT_OK=255
-readonly G__ERR_MISSING_ARG=1
+readonly ERR_OK=0
+readonly ERR_NOT_OK=255
+readonly ERR_MISSING_ARG=1
 
 # =============================================================================
 # Global Variables
@@ -97,8 +97,8 @@ readonly G__ERR_MISSING_ARG=1
 #   files_var_name [out]: Name of array variable to store collected file paths.
 #
 # Returns:
-#   G__ERR_OK: Target files were collected successfully.
-#   G__ERR_MISSING_ARG: Required argument was not provided.
+#   ERR_OK: Target files were collected successfully.
+#   ERR_MISSING_ARG: Required argument was not provided.
 #######################################
 function _run_verification2__collect_files() {
     # Constants
@@ -116,7 +116,7 @@ function _run_verification2__collect_files() {
     local -a _found_files=()
 
     # Parse and validate arguments
-    [[ $# -lt 2 ]] && return "$G__ERR_MISSING_ARG"
+    [[ $# -lt 2 ]] && return "$ERR_MISSING_ARG"
 
     _target_paths_var_name="$1"
     _files_var_name="$2"
@@ -148,7 +148,7 @@ function _run_verification2__collect_files() {
         fi
     done
 
-    return "$G__ERR_OK"
+    return "$ERR_OK"
 }
 
 #######################################
@@ -161,8 +161,8 @@ function _run_verification2__collect_files() {
 #   failures_var_name [out]: Name of array variable for file failure flags.
 #
 # Returns:
-#   G__ERR_OK: Tools were executed on all files successfully.
-#   G__ERR_MISSING_ARG: Required argument was not provided.
+#   ERR_OK: Tools were executed on all files successfully.
+#   ERR_MISSING_ARG: Required argument was not provided.
 #######################################
 function _run_verification2__execute_tools() {
     # Constants
@@ -185,7 +185,7 @@ function _run_verification2__execute_tools() {
     local _exit_code
 
     # Parse and validate arguments
-    [[ $# -lt 4 ]] && return "$G__ERR_MISSING_ARG"
+    [[ $# -lt 4 ]] && return "$ERR_MISSING_ARG"
 
     _files_var_name="$1"
     _results_var_name="$2"
@@ -226,7 +226,7 @@ function _run_verification2__execute_tools() {
         done
     done
 
-    return "$G__ERR_OK"
+    return "$ERR_OK"
 }
 
 #######################################
@@ -237,8 +237,8 @@ function _run_verification2__execute_tools() {
 #   results_var_name [in]: Name of associative array variable containing results.
 #
 # Returns:
-#   G__ERR_OK: Summary table was printed successfully.
-#   G__ERR_MISSING_ARG: Required argument was not provided.
+#   ERR_OK: Summary table was printed successfully.
+#   ERR_MISSING_ARG: Required argument was not provided.
 #######################################
 function _run_verification2__print_summary_table() {
     # Constants
@@ -273,7 +273,7 @@ function _run_verification2__print_summary_table() {
     local _divider
 
     # Parse and validate arguments
-    [[ $# -lt 2 ]] && return "$G__ERR_MISSING_ARG"
+    [[ $# -lt 2 ]] && return "$ERR_MISSING_ARG"
 
     _files_var_name="$1"
     _results_var_name="$2"
@@ -354,7 +354,7 @@ function _run_verification2__print_summary_table() {
     done
     echo -e "$_divider"
 
-    return "$G__ERR_OK"
+    return "$ERR_OK"
 }
 
 #######################################
@@ -366,8 +366,8 @@ function _run_verification2__print_summary_table() {
 #   failures_var_name [in]: Name of array variable containing failure flags.
 #
 # Returns:
-#   G__ERR_OK: Failure details were printed successfully.
-#   G__ERR_MISSING_ARG: Required argument was not provided.
+#   ERR_OK: Failure details were printed successfully.
+#   ERR_MISSING_ARG: Required argument was not provided.
 #######################################
 function _run_verification2__print_failure_details() {
     # Constants
@@ -389,7 +389,7 @@ function _run_verification2__print_failure_details() {
     local _line
 
     # Parse and validate arguments
-    [[ $# -lt 3 ]] && return "$G__ERR_MISSING_ARG"
+    [[ $# -lt 3 ]] && return "$ERR_MISSING_ARG"
 
     _files_var_name="$1"
     _outputs_var_name="$2"
@@ -426,7 +426,7 @@ function _run_verification2__print_failure_details() {
         done
     done
 
-    return "$G__ERR_OK"
+    return "$ERR_OK"
 }
 
 # =============================================================================
@@ -444,7 +444,7 @@ function _run_verification2__print_failure_details() {
 #   Defaults to 'src' and 'test' if omitted.
 #
 # Returns:
-#   G__ERR_OK: Verification pipeline completed successfully.
+#   ERR_OK: Verification pipeline completed successfully.
 #######################################
 function main() {
     set -u
@@ -467,7 +467,7 @@ function main() {
     # Function body
     _run_verification2__collect_files "_target_paths" "_files"
     if [[ ${#_files[@]} -eq 0 ]]; then
-        return "$G__ERR_OK"
+        return "$ERR_OK"
     fi
 
     _run_verification2__execute_tools "_files" "_results" "_outputs" "_has_failure"
@@ -476,11 +476,11 @@ function main() {
 
     for _file_idx in "${!_has_failure[@]}"; do
         if [[ ${_has_failure[$_file_idx]} -ne 0 ]]; then
-            return "$G__ERR_NOT_OK"
+            return "$ERR_NOT_OK"
         fi
     done
 
-    return "$G__ERR_OK"
+    return "$ERR_OK"
 }
 
 main "$@"

@@ -44,7 +44,7 @@ readonly FUT_DEPENDENCY_RELATIVE_PATHS
 # ID    LOG_LEVEL               message         stack           Expected                            Return Code         File Context
 # --    -------------------     -----------     ------------    -------------------------------     ------------------  -------------------
 # TC1   not relevant            not provide     not relevant    STDOUT does not contain message     G__ERR_MISSING_ARG  -
-# TC2   G__LOG_LEVEL_DEBUG      non-empty       non-number      STDOUT does not contain message     G__ERR_INVALID_ARG  -
+# TC2   G__LOG_LEVEL_DEBUG      non-empty       non-number      STDOUT does not contain message     G__ERR_TYPE_ERROR  -
 # TC3   G__LOG_LEVEL_DEBUG      non-empty       default (0)     STDOUT contains message             G__ERR_OK           lib-logging.sh
 # TC4   G__LOG_LEVEL_DEBUG      non-empty       caller (1)      STDOUT contains message             G__ERR_OK           test-lib-logging.sh
 # TC5   >G__LOG_LEVEL_DEBUG     non-empty       not relevant    STDOUT does not contain message     G__ERR_OK           -
@@ -74,7 +74,7 @@ function tc__debug__tc2__invalid_stack() {
 
     _stdout="$(LOG_LEVEL="$G__LOG_LEVEL_DEBUG" lib_logging__debug "$_MESSAGE" "invalid_stack")"
     _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_INVALID_ARG" "$_ret_code"
+    lib_tests__error_code_eq "$G__ERR_TYPE_ERROR" "$_ret_code"
     lib_tests__eq "" "$_stdout" "Expected empty STDOUT: '$_stdout'"
 }
 
@@ -141,7 +141,7 @@ function tc__debug__tc5__suppression() {
 # ID    LOG_LEVEL               message         stack           Expected                            Return Code         File Context
 # --    ------------------      -----------     ------------    -------------------------------     ------------------  -------------------
 # TC1   not relevant            not provide     not relevant    STDOUT does not contain message     G__ERR_MISSING_ARG  -
-# TC2   G__LOG_LEVEL_INFO       non-empty       non-number      STDOUT does not contain message     G__ERR_INVALID_ARG  -
+# TC2   G__LOG_LEVEL_INFO       non-empty       non-number      STDOUT does not contain message     G__ERR_TYPE_ERROR  -
 # TC3   G__LOG_LEVEL_INFO       non-empty       default (0)     STDOUT contains message             G__ERR_OK           lib-logging.sh
 # TC4   G__LOG_LEVEL_INFO       non-empty       caller (1)      STDOUT contains message             G__ERR_OK           test-lib-logging.sh
 # TC5   >G__LOG_LEVEL_INFO      non-empty       not relevant    STDOUT does not contain message     G__ERR_OK           -
@@ -171,7 +171,7 @@ function tc__info__tc2__invalid_stack() {
 
     _stdout="$(LOG_LEVEL="$G__LOG_LEVEL_INFO" lib_logging__info "$_MESSAGE" "invalid_stack")"
     _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_INVALID_ARG" "$_ret_code"
+    lib_tests__error_code_eq "$G__ERR_TYPE_ERROR" "$_ret_code"
     lib_tests__eq "" "$_stdout" "Expected empty STDOUT: '$_stdout'"
 }
 
@@ -238,7 +238,7 @@ function tc__info__tc5__suppression() {
 # ID    LOG_LEVEL               message         stack           Expected                            Return Code         File Context
 # --    ------------------      -----------     ------------    -------------------------------     ------------------  -------------------
 # TC1   not relevant            not provide     not relevant    STDOUT does not contain message     G__ERR_MISSING_ARG  -
-# TC2   G__LOG_LEVEL_WARN       non-empty       non-number      STDOUT does not contain message     G__ERR_INVALID_ARG  -
+# TC2   G__LOG_LEVEL_WARN       non-empty       non-number      STDOUT does not contain message     G__ERR_TYPE_ERROR  -
 # TC3   G__LOG_LEVEL_WARN       non-empty       default (0)     STDOUT contains message             G__ERR_OK           lib-logging.sh
 # TC4   G__LOG_LEVEL_WARN       non-empty       caller (1)      STDOUT contains message             G__ERR_OK           test-lib-logging.sh
 # TC5   >G__LOG_LEVEL_WARN      non-empty       not relevant    STDOUT does not contain message     G__ERR_OK           -
@@ -268,7 +268,7 @@ function tc__warn__tc2__invalid_stack() {
 
     _stdout="$(LOG_LEVEL="$G__LOG_LEVEL_WARN" lib_logging__warn "$_MESSAGE" "invalid_stack")"
     _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_INVALID_ARG" "$_ret_code"
+    lib_tests__error_code_eq "$G__ERR_TYPE_ERROR" "$_ret_code"
     lib_tests__eq "" "$_stdout" "Expected empty STDOUT: '$_stdout'"
 }
 
@@ -335,7 +335,7 @@ function tc__warn__tc5__suppression() {
 # ID    LOG_LEVEL               message         stack           Expected                            Return Code         File Context
 # --    -------------------     -----------     ------------    -------------------------------     ------------------  -------------------
 # TC1   not relevant            not provide     not relevant    STDOUT does not contain message     G__ERR_MISSING_ARG  -
-# TC2   G__LOG_LEVEL_ERROR      non-empty       non-number      STDOUT does not contain message     G__ERR_INVALID_ARG  -
+# TC2   G__LOG_LEVEL_ERROR      non-empty       non-number      STDOUT does not contain message     G__ERR_TYPE_ERROR  -
 # TC3   G__LOG_LEVEL_ERROR      non-empty       default (0)     STDOUT contains message             G__ERR_OK           lib-logging.sh
 # TC4   G__LOG_LEVEL_ERROR      non-empty       caller (1)      STDOUT contains message             G__ERR_OK           test-lib-logging.sh
 # TC5   >G__LOG_LEVEL_ERROR     non-empty       not relevant    STDOUT does not contain message     G__ERR_OK           -
@@ -365,7 +365,7 @@ function tc__error__tc2__invalid_stack() {
 
     _stdout="$(LOG_LEVEL="$G__LOG_LEVEL_ERROR" lib_logging__error "$_MESSAGE" "invalid_stack")"
     _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_INVALID_ARG" "$_ret_code"
+    lib_tests__error_code_eq "$G__ERR_TYPE_ERROR" "$_ret_code"
     lib_tests__eq "" "$_stdout" "Expected empty STDOUT: '$_stdout'"
 }
 
@@ -433,8 +433,8 @@ function tc__error__tc5__suppression() {
 # --    -----------     ---------       ------------    -------------------------------     ------------------  -------------------
 # TC1   not provide     not relevant    not relevant    STDOUT does not contain message     G__ERR_MISSING_ARG  -
 # TC2   non-empty       not provide     not relevant    STDOUT does not contain message     G__ERR_MISSING_ARG  -
-# TC3   non-empty       non-number      not relevant    STDOUT does not contain message     G__ERR_INVALID_ARG  -
-# TC4   non-empty       number          non-number      STDOUT does not contain message     G__ERR_INVALID_ARG  -
+# TC3   non-empty       non-number      not relevant    STDOUT does not contain message     G__ERR_TYPE_ERROR  -
+# TC4   non-empty       number          non-number      STDOUT does not contain message     G__ERR_TYPE_ERROR  -
 # TC5   non-empty       number          default (0)     STDOUT contains message             G__ERR_OK           lib-logging.sh
 # TC6   non-empty       number          caller (1)      STDOUT contains message             G__ERR_OK           test-lib-logging.sh
 #
@@ -477,7 +477,7 @@ function tc__fatal__tc3__invalid_exit_code() {
 
     _stdout="$(lib_logging__fatal "$_MESSAGE" "invalid_exit_code")"
     _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_INVALID_ARG" "$_ret_code"
+    lib_tests__error_code_eq "$G__ERR_TYPE_ERROR" "$_ret_code"
     lib_tests__eq "" "$_stdout" "Expected empty STDOUT: '$_stdout'"
 }
 
@@ -491,11 +491,11 @@ function tc__fatal__tc4__invalid_stack() {
 
     _stdout="$(lib_logging__fatal "$_MESSAGE" "$G__ERR_NOT_OK" "invalid_stack")"
     _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_INVALID_ARG" "$_ret_code"
+    lib_tests__error_code_eq "$G__ERR_TYPE_ERROR" "$_ret_code"
 
-    echo "$_stdout" | grep "G__ERR_INVALID_ARG"
+    echo "$_stdout" | grep "G__ERR_TYPE_ERROR"
     _ret_code=$?
-    lib_tests__eq "$G__ERR_OK" "$_ret_code" "Expected nested error: 'G__ERR_INVALID_ARG' STDOUT: '$_stdout'"
+    lib_tests__eq "$G__ERR_OK" "$_ret_code" "Expected nested error: 'G__ERR_TYPE_ERROR' STDOUT: '$_stdout'"
 }
 
 function tc__fatal__tc5__default_stack() {

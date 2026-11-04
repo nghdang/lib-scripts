@@ -43,7 +43,7 @@ readonly DEFAULT_STACK=0
 # Returns:
 #   G__ERR_OK: Log message was printed successfully.
 #   G__ERR_MISSING_ARG: Log level or message was not provided.
-#   G__ERR_INVALID_ARG: Invalid log level string or stack level number.
+#   G__ERR_TYPE_ERROR: Invalid log level string or stack level number.
 #######################################
 function _lib_logging__write_log() {
     # Constants
@@ -74,10 +74,10 @@ function _lib_logging__write_log() {
     done
 
     if [[ -z "$_level_str" ]]; then
-        return "$G__ERR_INVALID_ARG"
+        return "$G__ERR_TYPE_ERROR"
     fi
 
-    lib_base__is_number "$_stack" || return "$G__ERR_INVALID_ARG"
+    lib_base__is_number "$_stack" || return "$G__ERR_TYPE_ERROR"
 
     # Function body
     _timestamp="$(date +"%Y-%m-%d %H:%M:%S")"
@@ -109,7 +109,7 @@ function _lib_logging__write_log() {
 # Returns:
 #   G__ERR_OK: Log message was printed successfully.
 #   G__ERR_MISSING_ARG: Log message was not provided.
-#   G__ERR_INVALID_ARG: Invalid stack level number.
+#   G__ERR_TYPE_ERROR: Invalid stack level number.
 #######################################
 function lib_logging__debug() {
     # Constants
@@ -148,7 +148,7 @@ function lib_logging__debug() {
 # Returns:
 #   G__ERR_OK: Log message was printed successfully.
 #   G__ERR_MISSING_ARG: Log message was not provided.
-#   G__ERR_INVALID_ARG: Invalid stack level number.
+#   G__ERR_TYPE_ERROR: Invalid stack level number.
 #######################################
 function lib_logging__info() {
     # Constants
@@ -187,7 +187,7 @@ function lib_logging__info() {
 # Returns:
 #   G__ERR_OK: Log message was printed successfully.
 #   G__ERR_MISSING_ARG: Log message was not provided.
-#   G__ERR_INVALID_ARG: Invalid stack level number.
+#   G__ERR_TYPE_ERROR: Invalid stack level number.
 #######################################
 function lib_logging__warn() {
     # Constants
@@ -227,7 +227,7 @@ function lib_logging__warn() {
 # Returns:
 #   G__ERR_OK: Log message was printed successfully.
 #   G__ERR_MISSING_ARG: Log  message was not provided.
-#   G__ERR_INVALID_ARG: Invalid stack level number.
+#   G__ERR_TYPE_ERROR: Invalid stack level number.
 #######################################
 function lib_logging__error() {
     # Constants
@@ -267,7 +267,7 @@ function lib_logging__error() {
 #
 # Returns:
 #   G__ERR_MISSING_ARG: Log message or exit code was not provided.
-#   G__ERR_INVALID_ARG: Invalid exit code number.
+#   G__ERR_TYPE_ERROR: Invalid exit code number.
 #######################################
 function lib_logging__fatal() {
     # Constants
@@ -288,7 +288,7 @@ function lib_logging__fatal() {
     _exit_code="$2"
     _stack="${3:-$DEFAULT_STACK}"
 
-    lib_base__is_number "$_exit_code" || return "$G__ERR_INVALID_ARG"
+    lib_base__is_number "$_exit_code" || return "$G__ERR_TYPE_ERROR"
 
     # Function body
     _message="${G__COLOR_RED}${_message}${G__COLOR_RESET}"
@@ -296,7 +296,7 @@ function lib_logging__fatal() {
     _ret_code=$?
 
     if [[ "$G__ERR_OK" -ne "$_ret_code" ]]; then
-        _ret_code_str="$(lib_base__error_code_to_string "$_ret_code")"
+        _ret_code_str="$(ERR_NAMES "$_ret_code")"
 
         _sub_message="Unexpected error occurred while log was being written"
         _sub_message="${_sub_message}: ${_ret_code_str}"

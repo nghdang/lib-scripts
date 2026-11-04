@@ -16,16 +16,9 @@ export G__LIB_LAYOUT_SH_LOADED=1
 
 # ===== Project Scope =====
 export G__TABLE_CONFIG_ROW_PREFIX="row-prefix"
-readonly G__TABLE_CONFIG_ROW_PREFIX
-
 export G__TABLE_ALIGN_LEFT="left"
-readonly G__TABLE_ALIGN_LEFT
-
 export G__TABLE_ALIGN_CENTER="center"
-readonly G__TABLE_ALIGN_CENTER
-
 export G__TABLE_ALIGN_RIGHT="right"
-readonly G__TABLE_ALIGN_RIGHT
 
 # ===== File Scope =====
 readonly TABLE_ALIGNS=(
@@ -63,7 +56,7 @@ function lib_layout__draw_table_with_summary() {
     local _divider_h2
 
     # Parse and validate arguments
-    [[ $# -lt 1 ]] && return "$G__ERR_MISSING_ARG"
+    lib_base__assert_min_args "$#" "1"
 
     while [[ $# -gt 0 ]]; do
         case "$1" in
@@ -93,8 +86,8 @@ function lib_layout__draw_table_with_summary() {
         esac
     done
 
-    lib_base__is_number "$_width" || return "$G__ERR_INVALID_ARG"
-    lib_base__is_in "${TABLE_ALIGNS[*]}" "$_align" || return "$G__ERR_INVALID_ARG"
+    lib_base__is_number "$_width" || return "$G__ERR_TYPE_ERROR"
+    lib_base__is_in "${TABLE_ALIGNS[*]}" "$_align" || return "$G__ERR_TYPE_ERROR"
 
     lib_logging__debug "Summary: '$_summary'"
     lib_logging__debug "Width: '$_width'"
@@ -138,7 +131,9 @@ function main() {
 
     lib_layout__draw_table_with_summary "$@"
     ec=$?
-    echo "Exit code: $(lib_base__error_code_to_string "$ec")"
+    echo "Exit code: ${G__ERR_NAMES[$ec]} ($ec)"
+
+    lib_base__assert_var "dang"
 }
 
 if [[ "$0" == "${BASH_SOURCE[0]}" ]]; then

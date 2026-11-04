@@ -466,7 +466,7 @@ function lib_utils__print_env_vars() {
 # Returns:
 #   G__ERR_OK: Command executed successfully or dry-run mode is active.
 #   G__ERR_MISSING_ARG: No command was provided.
-#   G__ERR_INVALID_ARG: Output variable name is invalid.
+#   G__ERR_TYPE_ERROR: Output variable name is invalid.
 #   <exit code>: Exit code of the executed command on failure.
 #######################################
 function lib_utils__run_command() {
@@ -485,7 +485,7 @@ function lib_utils__run_command() {
     _cmd="$1"
     _stdout_var_name="${2:-}"
 
-    [[ -n "$_stdout_var_name" && ! "$_stdout_var_name" =~ ^[_a-zA-Z][_a-zA-Z0-9]*$ ]] && return "$G__ERR_INVALID_ARG"
+    [[ -n "$_stdout_var_name" && ! "$_stdout_var_name" =~ ^[_a-zA-Z][_a-zA-Z0-9]*$ ]] && return "$G__ERR_TYPE_ERROR"
 
     # Function body
     if [[ -n "$_stdout_var_name" ]]; then

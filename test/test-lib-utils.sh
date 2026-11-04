@@ -132,7 +132,7 @@ function tc__find_max_len__tc6__strings_with_spaces() {
 # ID    cmd                     stdout_var_name     DRY_RUN         Expected                                                    Return Code
 # --    -------------------     ---------------     ------------    --------------------------------------------------------    -------------------
 # TC1   not provide             not relevant        not relevant    command not executed                                        G__ERR_MISSING_ARG
-# TC2   non-empty               invalid             not relevant    command not executed                                        G__ERR_INVALID_ARG
+# TC2   non-empty               invalid             not relevant    command not executed                                        G__ERR_TYPE_ERROR
 # TC3   non-empty (success)     not provide         unset           command executed, STDOUT to terminal                        G__ERR_OK
 # TC4   non-empty (failure)     not provide         unset           command executed, failure exit code                         <exit code>
 # TC5   non-empty (success)     valid               unset           command executed, STDOUT stored in variable                 G__ERR_OK
@@ -162,7 +162,7 @@ function tc__run_command__tc2__invalid_stdout_var_name() {
 
     _stdout="$(lib_utils__run_command "$_cmd" "invalid-var-name")"
     _ret_code=$?
-    lib_tests__error_code_eq "$G__ERR_INVALID_ARG" "$_ret_code"
+    lib_tests__error_code_eq "$G__ERR_TYPE_ERROR" "$_ret_code"
     lib_tests__eq "" "$_stdout" "Expected empty STDOUT: '$_stdout'"
 }
 
