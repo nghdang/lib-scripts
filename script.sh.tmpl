@@ -8,151 +8,46 @@
 #
 #endregion File Header
 
-## Explanation
-##   Source: Relative path of this script to the project root dir.
-##     - Naming convention: `kebab-case`.
-##
-##     - E.g. src/source-script.sh
-##
-##   Dependencies: Relative paths of the scripts that this script depends on.
-##                 If this script has no dependencies, specify `None`.
-##     - Naming convention: `kebab-case`.
-##
-##     - E.g. src/dependency-script-1.sh
-##
-##   Description: Short summary of the purpose of this script.
-##                Note: Do not mention implementation details.
-##
-
 # ----- Source Guard -----
 [[ -n "${G__SCRIPT_NAME_SH_LOADED:-}" ]] && return 0
 declare -rx G__SCRIPT_NAME_SH_LOADED=1
 
 #region Global Constants
-# =============================================================================
+# ==================================================================================================
 # Global Constants
-# =============================================================================
+# ==================================================================================================
 
 #region Global Constants - Project Scope
 # ===== Project Scope =====
 
-## Explanation
-##   Constants that shall be used by this script or other scripts.
-##     - Naming convention: `UPPER_CASE` with prefix `G__`.
-##
-##     - These constants shall be declared with `declare -rx`.
-##
-##     - Large groups of constants should be organized into logical
-##       categories using sub-dividers (e.g. `# ----- Category -----`).
-##
-##     - E.g. `declare -rx G__PROJECT_SCOPE_CONSTANT="example"`
-##
 #endregion Global Constants - Project Scope
 
 #region Global Constants - File Scope
 # ===== File Scope =====
 
-## Explanation
-##   Constants that shall be used by this script only.
-##     - Naming convention: `UPPER_CASE`.
-##
-##     - These constants shall be declared with `readonly`.
-##
-##     - Large groups of constants should be organized into logical
-##       categories using sub-dividers (e.g. `# ----- Category -----`).
-##
-##     - E.g. `readonly FILE_SCOPE_CONSTANT="example"`
-##
 #endregion Global Constants - File Scope
 #endregion Global Constants
 
 #region Global Variables
-# =============================================================================
+# ==================================================================================================
 # Global Variables
-# =============================================================================
+# ==================================================================================================
 
 #region Global Variables - Project Scope
 # ===== Project Scope =====
 
-## Explanation
-##   Variables that shall be used by this script or other scripts.
-##     - Naming convention: `snake_case` with prefix `g__`.
-##
-##     - Suffix convention:
-##       - Normal variable (string, number): No suffix.
-##       - Name reference: `_ref`.
-##
-##     - These variables shall be declared with `export`.
-##
-##     - E.g. `export g__project_scope_variable="example"`
-##
 #endregion Global Variables - Project Scope
 
 #region Global Variables - File Scope
 # ===== File Scope =====
 
-## Explanation
-##   Variables that shall be used by this script only.
-##     - Naming convention: `snake_case`.
-##
-##     - Suffix convention: Same as Project Scope variables.
-##
-##     - E.g. `file_scope_variable="example"`
-##
 #endregion Global Variables - File Scope
 #endregion Global Variables
 
 #region Private Functions
-# =============================================================================
+# ==================================================================================================
 # Private Functions
-# =============================================================================
-
-## Explanation
-##   Functions that shall be used by this script only.
-##     - Naming convention: `snake_case` with prefix `_<module>__`
-##
-##     - Docstring convention: Custom Google style with Summary, Arguments,
-##                             Outputs, Returns, and Exits sections.
-##
-##       - Summary: One sentence describing the function's purpose.
-##                  The `Summary` keyword is omitted for this section.
-##
-##       - Arguments: List all function parameters in the following format:
-##                    <param> [in | out | inout]: <description>
-##
-##       - Outputs: List all intended data written to STDOUT. Do not list
-##                  diagnostic or informational messages.
-##                  Outputs shall be listed in the following format:
-##                  <what is written to STDOUT>
-##
-##       - Returns: List all error codes returned when the function terminates
-##                  without exiting the shell.
-##                  Error codes shall be listed in the following format:
-##                  <error code>: <when this code is returned>
-##
-##       - Exits: List all exit codes returned when the function terminates
-##                and causes the entire shell to terminate.
-##                Exit codes shall be listed in the following format:
-##                <exit code>: <when this code is returned>
-##
-##     - Internal structure convention: The function body should be organized
-##       into 4 distinct sections:
-##         1. `# Constants`: Local constants used within the function.
-##         2. `# Variables`: Local variable declarations. Parameter variables
-##            shall be at the top and other variables shall be at the bottom,
-##            separated by a blank line.
-##            - Naming convention: `snake_case` with prefix `_`.
-##            - Suffix convention: Same as Global Variables.
-##         3. `# Parse and validate arguments`: Argument count and value checks.
-##         4. `# Function body`: Main execution logic and return statement.
-##
-##     - Return code convention:
-##       - Standardize on error codes defined in `src/lib-base.sh` (`G__ERR_*`).
-##       - Non-mutating functions shall return `$G__ERR_OK` directly without
-##         declaring an unused `_error_code` variable.
-##       - Mutating functions shall initialize `local _error_code=$G__ERR_OK`,
-##         update it as needed, and `return "$_error_code"`.
-##
+# ==================================================================================================
 
 #region _module_name__private_function_name
 #######################################
@@ -191,18 +86,9 @@ function _module_name__private_function_name() {
 #endregion Private Functions
 
 #region Public Functions
-# =============================================================================
+# ==================================================================================================
 # Public Functions
-# =============================================================================
-
-## Explanation
-##   Functions that shall be used by this script or other scripts.
-##     - Naming convention: `snake_case` with prefix `<module>__`
-##
-##     - Docstring convention: Same as private functions.
-##
-##     - Internal structure convention: Same as private functions.
-##
+# ==================================================================================================
 
 #region module_name__public_function_name
 #######################################
@@ -241,13 +127,8 @@ function module_name__public_function_name() {
 #endregion Public Functions
 
 #region Entry Point
-# =============================================================================
+# ==================================================================================================
 # Entry Point
-# =============================================================================
+# ==================================================================================================
 
-## Explanation
-##   Commands that shall be run whenever this script is invoked.
-##   Note: This section is optional and should be omitted for reusable
-##         library scripts that are meant to be sourced only.
-##
 #endregion Entry Point
