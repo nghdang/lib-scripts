@@ -6,159 +6,103 @@
 # FUT         : <source-script.sh>
 #
 
-## Explanation
-##   Source: Relative path of this test script to the project root dir.
-##     - Naming convention: `test-<name of file under test>.sh`.
-##
-##     - E.g. ./test/test-source-script.sh
-##
-##   Dependencies: Relative paths of the scripts that this script depends on.
-##     - Naming convention: `kebab-case`.
-##
-##     - E.g. ./test/lib-tests.sh
-##
-##   FUT: Relative path of the file under test (FUT) to the project root dir.
-##
+# ==================================================================================================
+# Initialization
+# ==================================================================================================
 
-# ----- Source Guard -----
-[[ -n "${G__SCRIPT_NAME_SH_LOADED:-}" ]] && return 0
-export G__SCRIPT_NAME_SH_LOADED=1
+# ===== Source Guard =====
+[[ -n "${G__TEST_SCRIPT_NAME_SH_LOADED:-}" ]] && return 0
+declare -rx G__TEST_SCRIPT_NAME_SH_LOADED=1
 
-# =============================================================================
+# ===== Source Dependencies =====
+# shellcheck disable=SC1090,SC1091
+source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/lib-testing.sh"
+
+# ==================================================================================================
 # Global Constants
-# =============================================================================
-
-## Explanation
-##   Constants that shall be used by this script only.
-##     - Naming convention: `UPPER_CASE`.
-##
-##     - These constants shall be declared with `readonly`.
-##
-##     - E.g. `readonly FILE_SCOPE_CONSTANT="example"`
-##
+# ==================================================================================================
 
 TEST_SCRIPT_PARENT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 readonly TEST_SCRIPT_PARENT_DIR
 
-LIB_TESTS_PATH="${TEST_SCRIPT_PARENT_DIR}/lib-tests.sh"
-readonly LIB_TESTS_PATH
-
-FUT_RELATIVE_PATH="../src/lib-base.sh"
+FUT_RELATIVE_PATH="../src/<source-script.sh>"
 readonly FUT_RELATIVE_PATH
 
 FUT_DEPENDENCY_RELATIVE_PATHS=()
 readonly FUT_DEPENDENCY_RELATIVE_PATHS
 
-# =============================================================================
+# ==================================================================================================
 # Global Variables
-# =============================================================================
+# ==================================================================================================
 
-## Explanation
-##   Variables that shall be used by this script only.
-##     - Naming convention: `snake_case`.
-##
-##     - E.g. `file_scope_variable="example"`
-##
-
-# =============================================================================
+# ==================================================================================================
 # Helper Functions
-# =============================================================================
+# ==================================================================================================
 
-## Explanation
-##   Functions that shall be used by test cases in this script only.
-##     - Naming convention: `snake_case` with prefix `_helper__`
-##
-##     - Docstring convention: Custom Google style with Summary, Arguments,
-##                             and Returns sections only.
-##
-##       - Summary: One sentence to describe the function purpose.
-##                  `Summary` keyword is omitted for this section.
-##
-##       - Arguments: List all function parameters with the following format
-##                    <param> [in | out | inout]: <description>
-##
-##       - Returns: List all return codes with the following format
-##                  <return code>: <when will this code be returned>
-##
-##     - E.g.
-##       ```
-##       #######################################
-##       # Assert the given path is a file or not
-##       #
-##       # Arguments:
-##       #   file_path: Path of file to assert
-##       #
-##       # Returns:
-##       #   0: Path is a file
-##       #   1: Path is not a file
-##       #######################################
-##       function _helper__assert_file() {
-##           local _file_path="$1"
-##
-##           if [[ -f "$_file_path" ]]; then
-##               return 0
-##           else
-##               return 1
-##           fi
-##       }
-##       ```
-##
+#######################################
+# Assert the given path is a file or not.
+#
+# Arguments:
+#   file_path [in]: Path of file to assert.
+#
+# Returns:
+#   G__ERR_OK: Path is a file.
+#   G__ERR_NOT_FILE: Path is not a file.
+#######################################
+function _helper__assert_file() {
+    # Constants
 
-# =============================================================================
+    # Parameters
+    local _file_path
+
+    # Variables
+
+    # Parse and validate arguments
+    _file_path="$1"
+
+    # Function body
+    if [[ -f "$_file_path" ]]; then
+        return "$G__ERR_OK"
+    else
+        return "$G__ERR_NOT_FILE"
+    fi
+}
+
+# ==================================================================================================
 # Test Cases
-# =============================================================================
+# ==================================================================================================
 
 #
-# Equivalence class table of `<sut name>`
+# Equivalence class table of `<sut_name>`
 # ID    <Param 1>   <Param 2>   ...     Expected    Return Code
 # --    ---------   ---------           --------    -----------
 # TC1   <value>     <value>             <expected>  <code>
 #
+function tc__<sut_name>__tc1__<tc_name>() {
+    # Constants
+    local -r _EXPECTED="expected output"
 
-## Explanation
-##   1. Equivalence class table
-##      Describe the input groups, expectation and return code of all test
-##      cases of a single software under test (SUT)
-##
-##   2. Functions that shall be invoked during the test.
-##     - Naming convention: `snake_case` with prefix
-##                          `tc__<sut name>__<tc id>__<tc name>` where,
-##                          `<tc id>` is retrieved from the corresponding
-##                           equivalence class table
-##
-##     - Docstring convention: Test case function does not have docstring.
-##
-##     - Assertion APIs (from `test/lib-tests.sh`):
-##       - `lib_tests__sut_existence "<sut_name>"`: Verify existence of SUT
-##         before running assertions.
-##       - `lib_tests__eq "<expected>" "<actual>" "<message>"`: Value equality.
-##       - `lib_tests__error_code_eq "<expected_code>" "<actual_code>" "<message>"`:
-##         Return / exit code equality.
-##
-##     - E.g.
-##       ```
-##       function tc__load_file__tc1__success() {
-##           local _file_path="valid_path"
-##
-##           local _stdout=""
-##           local _error_code=$G__ERR_OK
-##
-##           lib_tests__sut_existence "script__load_file"
-##
-##           _stdout="$(script__load_file "$_file_path")"
-##           _error_code=$?
-##           lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
-##           lib_tests__eq "expected output" "$_stdout" "Output mismatch"
-##       }
-##       ```
-##
+    # Parameters
 
-# =============================================================================
+    # Variables
+    local _file_path="valid_path"
+    local _stdout=""
+    local _error_code=$G__ERR_OK
+
+    # Function body
+    lib_testing__sut_existence "module__<sut_name>"
+
+    _stdout="$(module__<sut_name> "$_file_path")"
+    _error_code=$?
+    lib_testing__error_code_eq "$G__ERR_OK" "$_error_code"
+    lib_testing__eq "$_EXPECTED" "$_stdout" "Output mismatch"
+}
+
+# ==================================================================================================
 # Entry Point
-# =============================================================================
+# ==================================================================================================
 function main() {
-    # shellcheck disable=SC1090,SC1091
-    source "$LIB_TESTS_PATH"
+    set -u
 
     local _fut_path=""
     local _fut_relative_path=""
@@ -170,7 +114,9 @@ function main() {
         fut_dependency_paths+=("$(realpath "${TEST_SCRIPT_PARENT_DIR}/${_fut_relative_path}")")
     done
 
-    lib_tests__test_main "$_fut_path" "${fut_dependency_paths[@]}"
+    lib_testing__test_main "$_fut_path" "${fut_dependency_paths[@]}"
 }
 
-main
+if [[ "$0" == "${BASH_SOURCE[0]}" ]]; then
+    main "$@"
+fi

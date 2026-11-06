@@ -1,55 +1,49 @@
 #!/usr/bin/env bash
-#region File Header
 #
 # Source      : <source-script.sh>
 # Dependencies: <dependency-script-1.sh>
 #               <dependency-script-2.sh>
 # Description : <source-script.sh description>
 #
-#endregion File Header
 
-# ----- Source Guard -----
+# ==================================================================================================
+# Initialization
+# ==================================================================================================
+
+# ===== Source Guard =====
 [[ -n "${G__SCRIPT_NAME_SH_LOADED:-}" ]] && return 0
 declare -rx G__SCRIPT_NAME_SH_LOADED=1
 
-#region Global Constants
+# ===== Source Dependencies =====
+
+# ===== Function ID Mapping =====
+#
+# Function                              ID
+# -----------------------------------------
+# _module_name__private_function_name   p01
+# module_name__public_function_name     i01
+# -----------------------------------------
+
 # ==================================================================================================
 # Global Constants
 # ==================================================================================================
 
-#region Global Constants - Project Scope
 # ===== Project Scope =====
 
-#endregion Global Constants - Project Scope
-
-#region Global Constants - File Scope
 # ===== File Scope =====
 
-#endregion Global Constants - File Scope
-#endregion Global Constants
-
-#region Global Variables
 # ==================================================================================================
 # Global Variables
 # ==================================================================================================
 
-#region Global Variables - Project Scope
 # ===== Project Scope =====
 
-#endregion Global Variables - Project Scope
-
-#region Global Variables - File Scope
 # ===== File Scope =====
 
-#endregion Global Variables - File Scope
-#endregion Global Variables
-
-#region Private Functions
 # ==================================================================================================
 # Private Functions
 # ==================================================================================================
 
-#region _module_name__private_function_name
 #######################################
 # This is an example of a private function.
 #
@@ -61,36 +55,32 @@ declare -rx G__SCRIPT_NAME_SH_LOADED=1
 #   G__ERR_NOT_FILE: Path is not a file.
 #   G__ERR_MISSING_ARG: No file path was provided.
 #######################################
-#endregion _module_name__private_function_name
 function _module_name__private_function_name() {
     # Constants
 
-    # Variables
-    local _file_path
+    # Parameters
+    local _module_name_p01__file_path
 
-    local _error_code="$G__ERR_OK"
+    # Variables
+    local _module_name_p01__error_code="$G__ERR_OK"
 
     # Parse and validate arguments
     [[ $# -lt 1 ]] && return "$G__ERR_MISSING_ARG"
 
-    _file_path="$1"
+    _module_name_p01__file_path="$1"
 
     # Function body
-    if [[ ! -f "$_file_path" ]]; then
-        _error_code="$G__ERR_NOT_FILE"
+    if [[ ! -f "$_module_name_p01__file_path" ]]; then
+        _module_name_p01__error_code="$G__ERR_NOT_FILE"
     fi
 
-    return "$_error_code"
+    return "$_module_name_p01__error_code"
 }
 
-#endregion Private Functions
-
-#region Public Functions
 # ==================================================================================================
 # Public Functions
 # ==================================================================================================
 
-#region module_name__public_function_name
 #######################################
 # This is an example of a public function.
 #
@@ -102,33 +92,28 @@ function _module_name__private_function_name() {
 #   G__ERR_NOT_FILE: Path is not a file.
 #   G__ERR_MISSING_ARG: No file path was provided.
 #######################################
-#endregion module_name__public_function_name
 function module_name__public_function_name() {
     # Constants
 
-    # Variables
-    local _file_path
+    # Parameters
+    local _module_name_i01__file_path
 
-    local _error_code="$G__ERR_OK"
+    # Variables
+    local _module_name_i01__error_code="$G__ERR_OK"
 
     # Parse and validate arguments
     [[ $# -lt 1 ]] && return "$G__ERR_MISSING_ARG"
 
-    _file_path="$1"
+    _module_name_i01__file_path="$1"
 
     # Function body
-    if [[ ! -f "$_file_path" ]]; then
-        _error_code="$G__ERR_NOT_FILE"
+    if [[ ! -f "$_module_name_i01__file_path" ]]; then
+        _module_name_i01__error_code="$G__ERR_NOT_FILE"
     fi
 
-    return "$_error_code"
+    return "$_module_name_i01__error_code"
 }
 
-#endregion Public Functions
-
-#region Entry Point
 # ==================================================================================================
 # Entry Point
 # ==================================================================================================
-
-#endregion Entry Point

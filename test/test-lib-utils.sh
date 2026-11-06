@@ -5,7 +5,7 @@
 # FUT         : src/lib-utils.sh
 #
 
-# ----- Source Guard -----
+# ===== Source Guard =====
 [[ -n "${G__TEST_LIB_UTILS_SH_LOADED:-}" ]] && return 0
 export G__TEST_LIB_UTILS_SH_LOADED=1
 
@@ -55,36 +55,36 @@ function tc__find_max_len__tc1__missing_items() {
     local _stdout=""
     local _error_code="$G__ERR_OK"
 
-    lib_tests__sut_existence "lib_utils__find_max_len"
+    lib_testing__sut_existence "lib_utils__find_max_len"
 
     _stdout="$(lib_utils__find_max_len)"
     _error_code=$?
-    lib_tests__error_code_eq "$G__ERR_MISSING_ARG" "$_error_code"
-    lib_tests__eq "" "$_stdout" "Expected empty STDOUT: '$_stdout'"
+    lib_testing__error_code_eq "$G__ERR_MISSING_ARG" "$_error_code"
+    lib_testing__eq "" "$_stdout" "Expected empty STDOUT: '$_stdout'"
 }
 
 function tc__find_max_len__tc2__single_empty_string() {
     local _stdout=""
     local _error_code="$G__ERR_OK"
 
-    lib_tests__sut_existence "lib_utils__find_max_len"
+    lib_testing__sut_existence "lib_utils__find_max_len"
 
     _stdout="$(lib_utils__find_max_len "")"
     _error_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
-    lib_tests__eq "0" "$_stdout" "Expected max length '0', got '$_stdout'"
+    lib_testing__error_code_eq "$G__ERR_OK" "$_error_code"
+    lib_testing__eq "0" "$_stdout" "Expected max length '0', got '$_stdout'"
 }
 
 function tc__find_max_len__tc3__single_string() {
     local _stdout=""
     local _error_code="$G__ERR_OK"
 
-    lib_tests__sut_existence "lib_utils__find_max_len"
+    lib_testing__sut_existence "lib_utils__find_max_len"
 
     _stdout="$(lib_utils__find_max_len "abc")"
     _error_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
-    lib_tests__eq "3" "$_stdout" "Expected max length '3', got '$_stdout'"
+    lib_testing__error_code_eq "$G__ERR_OK" "$_error_code"
+    lib_testing__eq "3" "$_stdout" "Expected max length '3', got '$_stdout'"
 }
 
 function tc__find_max_len__tc4__multiple_strings_distinct_lengths() {
@@ -92,12 +92,12 @@ function tc__find_max_len__tc4__multiple_strings_distinct_lengths() {
     local _stdout=""
     local _error_code="$G__ERR_OK"
 
-    lib_tests__sut_existence "lib_utils__find_max_len"
+    lib_testing__sut_existence "lib_utils__find_max_len"
 
     _stdout="$(lib_utils__find_max_len "${_items[@]}")"
     _error_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
-    lib_tests__eq "3" "$_stdout" "Expected max length '3', got '$_stdout'"
+    lib_testing__error_code_eq "$G__ERR_OK" "$_error_code"
+    lib_testing__eq "3" "$_stdout" "Expected max length '3', got '$_stdout'"
 }
 
 function tc__find_max_len__tc5__multiple_strings_equal_max_length() {
@@ -105,12 +105,12 @@ function tc__find_max_len__tc5__multiple_strings_equal_max_length() {
     local _stdout=""
     local _error_code="$G__ERR_OK"
 
-    lib_tests__sut_existence "lib_utils__find_max_len"
+    lib_testing__sut_existence "lib_utils__find_max_len"
 
     _stdout="$(lib_utils__find_max_len "${_items[@]}")"
     _error_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
-    lib_tests__eq "3" "$_stdout" "Expected max length '3', got '$_stdout'"
+    lib_testing__error_code_eq "$G__ERR_OK" "$_error_code"
+    lib_testing__eq "3" "$_stdout" "Expected max length '3', got '$_stdout'"
 }
 
 function tc__find_max_len__tc6__strings_with_spaces() {
@@ -118,12 +118,12 @@ function tc__find_max_len__tc6__strings_with_spaces() {
     local _stdout=""
     local _error_code="$G__ERR_OK"
 
-    lib_tests__sut_existence "lib_utils__find_max_len"
+    lib_testing__sut_existence "lib_utils__find_max_len"
 
     _stdout="$(lib_utils__find_max_len "${_items[@]}")"
     _error_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
-    lib_tests__eq "11" "$_stdout" "Expected max length '11', got '$_stdout'"
+    lib_testing__error_code_eq "$G__ERR_OK" "$_error_code"
+    lib_testing__eq "11" "$_stdout" "Expected max length '11', got '$_stdout'"
 }
 
 #
@@ -144,12 +144,12 @@ function tc__run_command__tc1__missing_cmd() {
     local _stdout=""
     local _error_code="$G__ERR_OK"
 
-    lib_tests__sut_existence "lib_utils__run_command"
+    lib_testing__sut_existence "lib_utils__run_command"
 
     _stdout="$(lib_utils__run_command)"
     _error_code=$?
-    lib_tests__error_code_eq "$G__ERR_MISSING_ARG" "$_error_code"
-    lib_tests__eq "" "$_stdout" "Expected empty STDOUT: '$_stdout'"
+    lib_testing__error_code_eq "$G__ERR_MISSING_ARG" "$_error_code"
+    lib_testing__eq "" "$_stdout" "Expected empty STDOUT: '$_stdout'"
 }
 
 function tc__run_command__tc2__invalid_stdout_var_name() {
@@ -157,12 +157,12 @@ function tc__run_command__tc2__invalid_stdout_var_name() {
     local _stdout=""
     local _error_code="$G__ERR_OK"
 
-    lib_tests__sut_existence "lib_utils__run_command"
+    lib_testing__sut_existence "lib_utils__run_command"
 
     _stdout="$(lib_utils__run_command "$_cmd" "invalid-var-name")"
     _error_code=$?
-    lib_tests__error_code_eq "$G__ERR_TYPE_ERROR" "$_error_code"
-    lib_tests__eq "" "$_stdout" "Expected empty STDOUT: '$_stdout'"
+    lib_testing__error_code_eq "$G__ERR_TYPE_ERROR" "$_error_code"
+    lib_testing__eq "" "$_stdout" "Expected empty STDOUT: '$_stdout'"
 }
 
 function tc__run_command__tc3__success_without_stdout_var() {
@@ -171,15 +171,15 @@ function tc__run_command__tc3__success_without_stdout_var() {
     local _stdout=""
     local _error_code="$G__ERR_OK"
 
-    lib_tests__sut_existence "lib_utils__run_command"
+    lib_testing__sut_existence "lib_utils__run_command"
 
     _stdout="$(
         unset DRY_RUN
         lib_utils__run_command "$_cmd"
     )"
     _error_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
-    lib_tests__eq "$_expected_stdout" "$_stdout" "STDOUT mismatch: '$_stdout'"
+    lib_testing__error_code_eq "$G__ERR_OK" "$_error_code"
+    lib_testing__eq "$_expected_stdout" "$_stdout" "STDOUT mismatch: '$_stdout'"
 }
 
 function tc__run_command__tc4__failure_without_stdout_var() {
@@ -188,15 +188,15 @@ function tc__run_command__tc4__failure_without_stdout_var() {
     local _stdout=""
     local _error_code="$G__ERR_OK"
 
-    lib_tests__sut_existence "lib_utils__run_command"
+    lib_testing__sut_existence "lib_utils__run_command"
 
     _stdout="$(
         unset DRY_RUN
         lib_utils__run_command "$_cmd"
     )"
     _error_code=$?
-    lib_tests__error_code_eq "$_expected_code" "$_error_code"
-    lib_tests__eq "" "$_stdout" "Expected empty STDOUT: '$_stdout'"
+    lib_testing__error_code_eq "$_expected_code" "$_error_code"
+    lib_testing__eq "" "$_stdout" "Expected empty STDOUT: '$_stdout'"
 }
 
 function tc__run_command__tc5__success_with_stdout_var() {
@@ -205,13 +205,13 @@ function tc__run_command__tc5__success_with_stdout_var() {
     local _captured="initial_value"
     local _error_code="$G__ERR_OK"
 
-    lib_tests__sut_existence "lib_utils__run_command"
+    lib_testing__sut_existence "lib_utils__run_command"
 
     unset DRY_RUN
     lib_utils__run_command "$_cmd" "_captured"
     _error_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
-    lib_tests__eq "$_expected_output" "$_captured" "Captured output mismatch: '$_captured'"
+    lib_testing__error_code_eq "$G__ERR_OK" "$_error_code"
+    lib_testing__eq "$_expected_output" "$_captured" "Captured output mismatch: '$_captured'"
 }
 
 function tc__run_command__tc6__failure_with_stdout_var() {
@@ -221,13 +221,13 @@ function tc__run_command__tc6__failure_with_stdout_var() {
     local _captured="initial_value"
     local _error_code="$G__ERR_OK"
 
-    lib_tests__sut_existence "lib_utils__run_command"
+    lib_testing__sut_existence "lib_utils__run_command"
 
     unset DRY_RUN
     lib_utils__run_command "$_cmd" "_captured"
     _error_code=$?
-    lib_tests__error_code_eq "$_expected_code" "$_error_code"
-    lib_tests__eq "$_expected_output" "$_captured" "Captured output mismatch: '$_captured'"
+    lib_testing__error_code_eq "$_expected_code" "$_error_code"
+    lib_testing__eq "$_expected_output" "$_captured" "Captured output mismatch: '$_captured'"
 }
 
 function tc__run_command__tc7__dry_run_without_stdout_var() {
@@ -236,15 +236,15 @@ function tc__run_command__tc7__dry_run_without_stdout_var() {
     local _stdout=""
     local _error_code="$G__ERR_OK"
 
-    lib_tests__sut_existence "lib_utils__run_command"
+    lib_testing__sut_existence "lib_utils__run_command"
 
     _stdout="$(DRY_RUN=1 lib_utils__run_command "$_cmd")"
     _error_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
+    lib_testing__error_code_eq "$G__ERR_OK" "$_error_code"
 
     echo "$_stdout" | grep -F "$_expected_log"
     _error_code=$?
-    lib_tests__eq "$G__ERR_OK" "$_error_code" "Expected log message '$_expected_log' in STDOUT: '$_stdout'"
+    lib_testing__eq "$G__ERR_OK" "$_error_code" "Expected log message '$_expected_log' in STDOUT: '$_stdout'"
 }
 
 function tc__run_command__tc8__dry_run_with_stdout_var() {
@@ -254,21 +254,21 @@ function tc__run_command__tc8__dry_run_with_stdout_var() {
     local _stdout=""
     local _error_code="$G__ERR_OK"
 
-    lib_tests__sut_existence "lib_utils__run_command"
+    lib_testing__sut_existence "lib_utils__run_command"
 
     export DRY_RUN=1
     _stdout="$(lib_utils__run_command "$_cmd" "_captured")"
     _error_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
+    lib_testing__error_code_eq "$G__ERR_OK" "$_error_code"
 
     echo "$_stdout" | grep -F "$_expected_log"
     _error_code=$?
-    lib_tests__eq "$G__ERR_OK" "$_error_code" "Expected log message '$_expected_log' in STDOUT: '$_stdout'"
+    lib_testing__eq "$G__ERR_OK" "$_error_code" "Expected log message '$_expected_log' in STDOUT: '$_stdout'"
 
     lib_utils__run_command "$_cmd" "_captured" >/dev/null
     _error_code=$?
-    lib_tests__error_code_eq "$G__ERR_OK" "$_error_code"
-    lib_tests__eq "" "$_captured" "Expected empty captured variable: '$_captured'"
+    lib_testing__error_code_eq "$G__ERR_OK" "$_error_code"
+    lib_testing__eq "" "$_captured" "Expected empty captured variable: '$_captured'"
 }
 
 # =============================================================================
@@ -288,7 +288,7 @@ function main() {
         fut_dependency_paths+=("$(realpath "${TEST_SCRIPT_PARENT_DIR}/${_fut_relative_path}")")
     done
 
-    lib_tests__test_main "$_fut_path" "${fut_dependency_paths[@]}"
+    lib_testing__test_main "$_fut_path" "${fut_dependency_paths[@]}"
 }
 
 main
