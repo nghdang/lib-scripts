@@ -12,7 +12,7 @@
 
 # ===== Source Guard =====
 [[ -n "${G__TEST_SCRIPT_NAME_SH_LOADED:-}" ]] && return 0
-declare -rx G__TEST_SCRIPT_NAME_SH_LOADED=1
+declare -gr G__TEST_SCRIPT_NAME_SH_LOADED=1
 
 # ===== Source Dependencies =====
 # shellcheck disable=SC1090,SC1091
@@ -78,7 +78,7 @@ function _helper__assert_file() {
 # --    ---------   ---------           --------    -----------
 # TC1   <value>     <value>             <expected>  <code>
 #
-function tc__<sut_name>__tc1__<tc_name>() {
+function tc__sut_name__tc1__tc_name() {
     # Constants
     local -r _EXPECTED="expected output"
 
@@ -92,7 +92,7 @@ function tc__<sut_name>__tc1__<tc_name>() {
     # Function body
     lib_testing__sut_existence "module__<sut_name>"
 
-    _stdout="$(module__<sut_name> "$_file_path")"
+    _stdout="$(module__sut_name "$_file_path")"
     _error_code=$?
     lib_testing__error_code_eq "$G__ERR_OK" "$_error_code"
     lib_testing__eq "$_EXPECTED" "$_stdout" "Output mismatch"

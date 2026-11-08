@@ -11,7 +11,7 @@
 
 # ===== Source Guard =====
 [[ -n "${G__LIB_TESTING_SH_LOADED:-}" ]] && return 0
-declare -rx G__LIB_TESTING_SH_LOADED=1
+declare -gr G__LIB_TESTING_SH_LOADED=1
 
 # ===== Source Dependencies =====
 # shellcheck disable=SC1090,SC1091

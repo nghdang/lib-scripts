@@ -95,7 +95,7 @@ Reusable scripts must include a source guard within the `Initialization` section
 ```bash
 # ===== Source Guard =====
 [[ -n "${G__<SCRIPT_NAME>_SH_LOADED:-}" ]] && return 0
-declare -rx G__<SCRIPT_NAME>_SH_LOADED=1
+declare -gr G__<SCRIPT_NAME>_SH_LOADED=1
 ```
 
 ### [STRUCT.3] Function ID Mapping Table
@@ -182,8 +182,8 @@ This section is optional and must be omitted for reusable library scripts intend
 
 ### [STRUCT.10] Line Length Limit
 
-- Line length must not exceed 100 characters.
-- For code lines, using line continuation backslashes (`\`) is not recommended, but it can still be used if there are no other ways.
+- Line length of comment lines must not exceed 100 characters. Except Equivalence class table in test files.
+- Line length of code lines is unlimited but should not too long due to readability.
 
 ---
 

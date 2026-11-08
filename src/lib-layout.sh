@@ -14,7 +14,9 @@
 
 # ===== Source Guard =====
 [[ -n "${G__LIB_LAYOUT_SH_LOADED:-}" ]] && return 0
-declare -rx G__LIB_LAYOUT_SH_LOADED=1
+declare -gr G__LIB_LAYOUT_SH_LOADED=1
+
+shopt -s extglob
 
 # ===== Source Dependencies =====
 # shellcheck disable=SC1090,SC1091
@@ -104,10 +106,8 @@ function _lib_layout__draw_table_summary() {
     lib_assertion__assert_number "$_lib_layout_p01__table_width" "Table width"
 
     # Function body
-    _lib_layout_p01__line_width=$(( \
-        _lib_layout_p01__table_width - 2 * (${#_lib_layout_p01__border} + 1)))
-    lib_text__align "_lib_layout_p01__summary_line" "$_lib_layout_p01__summary" \
-        "$_lib_layout_p01__line_width" "$_lib_layout_p01__align"
+    _lib_layout_p01__line_width=$((_lib_layout_p01__table_width - 2 * (${#_lib_layout_p01__border} + 1)))
+    lib_text__align "_lib_layout_p01__summary_line" "$_lib_layout_p01__summary" "$_lib_layout_p01__line_width" "$_lib_layout_p01__align"
 
     _lib_layout_p01__ret_val_ref="$_lib_layout_p01__border "
     _lib_layout_p01__ret_val_ref+="$_lib_layout_p01__summary_line $_lib_layout_p01__border"
@@ -161,6 +161,7 @@ function _lib_layout__calc_column_widths() {
     local _lib_layout_p02__message
     local _lib_layout_p02__column_max_len
     local _lib_layout_p02__cell
+    local _lib_layout_p02__clean_cell
     local _lib_layout_p02__width
     local _lib_layout_p02__max_len
     local _lib_layout_p02__filled_cols_width
@@ -196,8 +197,7 @@ function _lib_layout__calc_column_widths() {
     fi
 
     if [[ "$_lib_layout_p02__ncols" -le 0 || "${#_lib_layout_p02__cells_ref[@]}" -eq 0 ||
-        "$((_lib_layout_p02__nrows * _lib_layout_p02__ncols))" -ne \
-        "${#_lib_layout_p02__cells_ref[@]}" ]]; then
+        "$((_lib_layout_p02__nrows * _lib_layout_p02__ncols))" -ne "${#_lib_layout_p02__cells_ref[@]}" ]]; then
         _lib_layout_p02__message="Number of cells and columns are not matched: "
         _lib_layout_p02__message+="$_lib_layout_p02__ncols columns vs "
         _lib_layout_p02__message+="${#_lib_layout_p02__cells_ref[@]} cells"
@@ -206,16 +206,14 @@ function _lib_layout__calc_column_widths() {
 
     # Function body
     # 1. Determine maximum column value length for each column
-    for ((_lib_layout_p02__colx = 0; \
-        _lib_layout_p02__colx < _lib_layout_p02__ncols; _lib_layout_p02__colx++)); do
+    for ((_lib_layout_p02__colx = 0; _lib_layout_p02__colx < _lib_layout_p02__ncols; _lib_layout_p02__colx++)); do
         _lib_layout_p02__column_max_len=0
 
-        for ((_lib_layout_p02__rowx = 0; \
-            _lib_layout_p02__rowx < _lib_layout_p02__nrows; _lib_layout_p02__rowx++)); do
-            _lib_layout_p02__cell="${_lib_layout_p02__cells_ref[_lib_layout_p02__colx + \
-                _lib_layout_p02__ncols * _lib_layout_p02__rowx]}"
-            if [[ "${#_lib_layout_p02__cell}" -gt "$_lib_layout_p02__column_max_len" ]]; then
-                _lib_layout_p02__column_max_len="${#_lib_layout_p02__cell}"
+        for ((_lib_layout_p02__rowx = 0; _lib_layout_p02__rowx < _lib_layout_p02__nrows; _lib_layout_p02__rowx++)); do
+            _lib_layout_p02__cell="${_lib_layout_p02__cells_ref[_lib_layout_p02__colx + _lib_layout_p02__ncols * _lib_layout_p02__rowx]}"
+            _lib_layout_p02__clean_cell="${_lib_layout_p02__cell//$'\033'\[*([0-9;])[a-zA-Z]/}"
+            if [[ "${#_lib_layout_p02__clean_cell}" -gt "$_lib_layout_p02__column_max_len" ]]; then
+                _lib_layout_p02__column_max_len="${#_lib_layout_p02__clean_cell}"
             fi
         done
 
@@ -224,18 +222,16 @@ function _lib_layout__calc_column_widths() {
 
     # 2. Normalize user-defined widths to column count
     if [[ "${#_lib_layout_p02__user_widths[@]}" -lt "$_lib_layout_p02__ncols" ]]; then
-        for ((_lib_layout_p02__colx = ${#_lib_layout_p02__user_widths[@]}; \
-            _lib_layout_p02__colx < _lib_layout_p02__ncols; _lib_layout_p02__colx++)); do
+        for ((_lib_layout_p02__colx = ${#_lib_layout_p02__user_widths[@]}; _lib_layout_p02__colx < _lib_layout_p02__ncols; _lib_layout_p02__colx++)); do
             _lib_layout_p02__user_widths+=("-1")
         done
     elif [[ "${#_lib_layout_p02__user_widths[@]}" -gt "$_lib_layout_p02__ncols" ]]; then
-        _lib_layout_p02__user_widths=( \
+        _lib_layout_p02__user_widths=(
             "${_lib_layout_p02__user_widths[@]:0:$_lib_layout_p02__ncols}")
     fi
 
     # 3. Classify widths into fixed and filled values
-    for ((_lib_layout_p02__colx = 0; \
-        _lib_layout_p02__colx < _lib_layout_p02__ncols; _lib_layout_p02__colx++)); do
+    for ((_lib_layout_p02__colx = 0; _lib_layout_p02__colx < _lib_layout_p02__ncols; _lib_layout_p02__colx++)); do
         _lib_layout_p02__width="${_lib_layout_p02__user_widths[_lib_layout_p02__colx]}"
         _lib_layout_p02__max_len="${_lib_layout_p02__max_lens[_lib_layout_p02__colx]}"
 
@@ -243,8 +239,7 @@ function _lib_layout__calc_column_widths() {
             if [[ "$_lib_layout_p02__width" -lt "$_lib_layout_p02__max_len" ]]; then
                 _lib_layout_p02__width="$_lib_layout_p02__max_len"
             fi
-            _lib_layout_p02__fixed_cols_width=$(( \
-                _lib_layout_p02__fixed_cols_width + _lib_layout_p02__width))
+            _lib_layout_p02__fixed_cols_width=$((_lib_layout_p02__fixed_cols_width + _lib_layout_p02__width))
         else
             _lib_layout_p02__width="-1"
             _lib_layout_p02__filled_ncols=$((_lib_layout_p02__filled_ncols + 1))
@@ -253,23 +248,17 @@ function _lib_layout__calc_column_widths() {
         _lib_layout_p02__column_widths+=("$_lib_layout_p02__width")
     done
 
-    _lib_layout_p02__borders_width=$(((_lib_layout_p02__ncols + 1) * ( \
-        ${#_lib_layout_p02__border} + 1) + (_lib_layout_p02__ncols - 1)))
-    _lib_layout_p02__available_widths=$(( \
-        _lib_layout_p02__table_width - _lib_layout_p02__borders_width))
+    _lib_layout_p02__borders_width=$(((_lib_layout_p02__ncols + 1) * (${#_lib_layout_p02__border} + 1) + (_lib_layout_p02__ncols - 1)))
+    _lib_layout_p02__available_widths=$((_lib_layout_p02__table_width - _lib_layout_p02__borders_width))
 
     # 4. Distribute available width to filled columns or scale last column
     if [[ "$_lib_layout_p02__filled_ncols" -gt 0 ]]; then
-        _lib_layout_p02__filled_cols_width=$(( \
-            _lib_layout_p02__available_widths - _lib_layout_p02__fixed_cols_width))
-        _lib_layout_p02__filled_width=$(( \
-            _lib_layout_p02__filled_cols_width / _lib_layout_p02__filled_ncols))
-        _lib_layout_p02__last_filled_width=$((_lib_layout_p02__filled_cols_width - ( \
-            _lib_layout_p02__filled_ncols - 1) * _lib_layout_p02__filled_width))
+        _lib_layout_p02__filled_cols_width=$((_lib_layout_p02__available_widths - _lib_layout_p02__fixed_cols_width))
+        _lib_layout_p02__filled_width=$((_lib_layout_p02__filled_cols_width / _lib_layout_p02__filled_ncols))
+        _lib_layout_p02__last_filled_width=$((_lib_layout_p02__filled_cols_width - (_lib_layout_p02__filled_ncols - 1) * _lib_layout_p02__filled_width))
         _lib_layout_p02__filled_count=0
 
-        for ((_lib_layout_p02__colx = 0; \
-            _lib_layout_p02__colx < _lib_layout_p02__ncols; _lib_layout_p02__colx++)); do
+        for ((_lib_layout_p02__colx = 0; _lib_layout_p02__colx < _lib_layout_p02__ncols; _lib_layout_p02__colx++)); do
             if [[ "${_lib_layout_p02__column_widths[_lib_layout_p02__colx]}" -eq "-1" ]]; then
                 _lib_layout_p02__filled_count=$((_lib_layout_p02__filled_count + 1))
 
@@ -284,18 +273,13 @@ function _lib_layout__calc_column_widths() {
     else
         _lib_layout_p02__total_cols_width=0
 
-        for ((_lib_layout_p02__colx = 0; \
-            _lib_layout_p02__colx < _lib_layout_p02__ncols; _lib_layout_p02__colx++)); do
-            _lib_layout_p02__total_cols_width=$(( \
-                _lib_layout_p02__total_cols_width + \
-                _lib_layout_p02__column_widths[_lib_layout_p02__colx]))
+        for ((_lib_layout_p02__colx = 0; _lib_layout_p02__colx < _lib_layout_p02__ncols; _lib_layout_p02__colx++)); do
+            _lib_layout_p02__total_cols_width=$((_lib_layout_p02__total_cols_width + _lib_layout_p02__column_widths[_lib_layout_p02__colx]))
         done
 
         if [[ "$_lib_layout_p02__total_cols_width" -lt "$_lib_layout_p02__available_widths" ]]; then
-            _lib_layout_p02__diff=$(( \
-                _lib_layout_p02__available_widths - _lib_layout_p02__total_cols_width))
-            _lib_layout_p02__column_widths[_lib_layout_p02__ncols - 1]=$(( \
-                _lib_layout_p02__column_widths[_lib_layout_p02__ncols - 1] + _lib_layout_p02__diff))
+            _lib_layout_p02__diff=$((_lib_layout_p02__available_widths - _lib_layout_p02__total_cols_width))
+            _lib_layout_p02__column_widths[_lib_layout_p02__ncols - 1]=$((_lib_layout_p02__column_widths[_lib_layout_p02__ncols - 1] + _lib_layout_p02__diff))
         fi
     fi
 
@@ -359,8 +343,7 @@ function _lib_layout__draw_table_row() {
     lib_assertion__assert_array "${!_lib_layout_p03__column_widths_ref}"
     lib_assertion__assert_number "$_lib_layout_p03__table_width" "Table width"
 
-    if [[ "${#_lib_layout_p03__columns_ref[@]}" -ne \
-        "${#_lib_layout_p03__column_widths_ref[@]}" ]]; then
+    if [[ "${#_lib_layout_p03__columns_ref[@]}" -ne "${#_lib_layout_p03__column_widths_ref[@]}" ]]; then
         _lib_layout_p03__message="Number of headers and column widths are not equal: "
         _lib_layout_p03__message+="${#_lib_layout_p03__columns_ref[@]} headers vs "
         _lib_layout_p03__message+="${#_lib_layout_p03__column_widths_ref[@]} column widths"
@@ -373,10 +356,7 @@ function _lib_layout__draw_table_row() {
             _lib_layout_p03__columns_line+=" $_lib_layout_p03__border "
         fi
 
-        lib_text__align "_lib_layout_p03__column_value" \
-            "${_lib_layout_p03__columns_ref[$_lib_layout_p03__idx]}" \
-            "${_lib_layout_p03__column_widths_ref[$_lib_layout_p03__idx]}" \
-            "$_lib_layout_p03__align"
+        lib_text__align "_lib_layout_p03__column_value" "${_lib_layout_p03__columns_ref[$_lib_layout_p03__idx]}" "${_lib_layout_p03__column_widths_ref[$_lib_layout_p03__idx]}" "$_lib_layout_p03__align"
 
         _lib_layout_p03__columns_line+="${_lib_layout_p03__column_value}"
     done
@@ -493,6 +473,7 @@ function lib_layout__draw_table() {
     local _lib_layout_i02__table_lines=""
     local _lib_layout_i02__column_max_len
     local _lib_layout_i02__cell
+    local _lib_layout_i02__clean_cell
     local _lib_layout_i02__u_width
     local _lib_layout_i02__diff
     local _lib_layout_i02__message
@@ -522,8 +503,7 @@ function lib_layout__draw_table() {
     fi
 
     if [[ "$_lib_layout_i02__ncols" -le 0 || "${#_lib_layout_i02__cells_ref[@]}" -eq 0 ||
-        "$((_lib_layout_i02__nrows * _lib_layout_i02__ncols))" -ne \
-        "${#_lib_layout_i02__cells_ref[@]}" ]]; then
+        "$((_lib_layout_i02__nrows * _lib_layout_i02__ncols))" -ne "${#_lib_layout_i02__cells_ref[@]}" ]]; then
         _lib_layout_i02__message="Number of cells and columns are not matched: "
         _lib_layout_i02__message+="$_lib_layout_i02__ncols columns vs "
         _lib_layout_i02__message+="${#_lib_layout_i02__cells_ref[@]} cells"
@@ -533,67 +513,51 @@ function lib_layout__draw_table() {
     # Function body
     _lib_layout_i02__user_widths=("${_lib_layout_i02__user_widths_ref[@]}")
 
-    for ((_lib_layout_i02__colx = 0; \
-        _lib_layout_i02__colx < _lib_layout_i02__ncols; _lib_layout_i02__colx++)); do
+    for ((_lib_layout_i02__colx = 0; _lib_layout_i02__colx < _lib_layout_i02__ncols; _lib_layout_i02__colx++)); do
         _lib_layout_i02__column_max_len=0
-        for ((_lib_layout_i02__rowx = 0; \
-            _lib_layout_i02__rowx < _lib_layout_i02__nrows; _lib_layout_i02__rowx++)); do
-            _lib_layout_i02__cell="${_lib_layout_i02__cells_ref[_lib_layout_i02__colx + \
-                _lib_layout_i02__ncols * _lib_layout_i02__rowx]}"
-            if [[ "${#_lib_layout_i02__cell}" -gt "$_lib_layout_i02__column_max_len" ]]; then
-                _lib_layout_i02__column_max_len="${#_lib_layout_i02__cell}"
+        for ((_lib_layout_i02__rowx = 0; _lib_layout_i02__rowx < _lib_layout_i02__nrows; _lib_layout_i02__rowx++)); do
+            _lib_layout_i02__cell="${_lib_layout_i02__cells_ref[_lib_layout_i02__colx + _lib_layout_i02__ncols * _lib_layout_i02__rowx]}"
+            _lib_layout_i02__clean_cell="${_lib_layout_i02__cell//$'\033'\[*([0-9;])[a-zA-Z]/}"
+            if [[ "${#_lib_layout_i02__clean_cell}" -gt "$_lib_layout_i02__column_max_len" ]]; then
+                _lib_layout_i02__column_max_len="${#_lib_layout_i02__clean_cell}"
             fi
         done
         _lib_layout_i02__max_lens+=("$_lib_layout_i02__column_max_len")
 
         _lib_layout_i02__u_width="${_lib_layout_i02__user_widths[_lib_layout_i02__colx]:--1}"
         if [[ "$_lib_layout_i02__u_width" -gt "$_lib_layout_i02__column_max_len" ]]; then
-            _lib_layout_i02__min_cols_width=$(( \
-                _lib_layout_i02__min_cols_width + _lib_layout_i02__u_width))
+            _lib_layout_i02__min_cols_width=$((_lib_layout_i02__min_cols_width + _lib_layout_i02__u_width))
         else
-            _lib_layout_i02__min_cols_width=$(( \
-                _lib_layout_i02__min_cols_width + _lib_layout_i02__column_max_len))
+            _lib_layout_i02__min_cols_width=$((_lib_layout_i02__min_cols_width + _lib_layout_i02__column_max_len))
         fi
     done
 
-    _lib_layout_i02__borders_width=$(((_lib_layout_i02__ncols + 1) * ( \
-        ${#_lib_layout_i02__border} + 1) + (_lib_layout_i02__ncols - 1)))
-    _lib_layout_i02__min_table_width=$(( \
-        _lib_layout_i02__min_cols_width + _lib_layout_i02__borders_width))
+    _lib_layout_i02__borders_width=$(((_lib_layout_i02__ncols + 1) * (${#_lib_layout_i02__border} + 1) + (_lib_layout_i02__ncols - 1)))
+    _lib_layout_i02__min_table_width=$((_lib_layout_i02__min_cols_width + _lib_layout_i02__borders_width))
     if [[ "$_lib_layout_i02__min_table_width" -gt "$_lib_layout_i02__table_width" ]]; then
         _lib_layout_i02__table_width="$_lib_layout_i02__min_table_width"
     fi
 
-    _lib_layout__calc_column_widths "_lib_layout_i02__calc_widths" "$_lib_layout_i02__ncols" \
-        "${!_lib_layout_i02__cells_ref}" "_lib_layout_i02__user_widths" \
-        "$_lib_layout_i02__table_width" "$_lib_layout_i02__border"
+    _lib_layout__calc_column_widths "_lib_layout_i02__calc_widths" "$_lib_layout_i02__ncols" "${!_lib_layout_i02__cells_ref}" "_lib_layout_i02__user_widths" "$_lib_layout_i02__table_width" "$_lib_layout_i02__border"
 
-    for ((_lib_layout_i02__colx = 0; \
-        _lib_layout_i02__colx < _lib_layout_i02__ncols; _lib_layout_i02__colx++)); do
+    for ((_lib_layout_i02__colx = 0; _lib_layout_i02__colx < _lib_layout_i02__ncols; _lib_layout_i02__colx++)); do
         local _colx="$_lib_layout_i02__colx"
-        if [[ "${_lib_layout_i02__calc_widths[_colx]}" -lt \
-            "${_lib_layout_i02__max_lens[_colx]}" ]]; then
+        if [[ "${_lib_layout_i02__calc_widths[_colx]}" -lt "${_lib_layout_i02__max_lens[_colx]}" ]]; then
             _lib_layout_i02__calc_widths[_colx]="${_lib_layout_i02__max_lens[_colx]}"
         fi
-        _lib_layout_i02__total_row_width=$(( \
-            _lib_layout_i02__total_row_width + _lib_layout_i02__calc_widths[_colx]))
+        _lib_layout_i02__total_row_width=$((_lib_layout_i02__total_row_width + _lib_layout_i02__calc_widths[_colx]))
     done
 
-    _lib_layout_i02__total_row_width=$(( \
-        _lib_layout_i02__total_row_width + _lib_layout_i02__borders_width))
+    _lib_layout_i02__total_row_width=$((_lib_layout_i02__total_row_width + _lib_layout_i02__borders_width))
     if [[ "$_lib_layout_i02__total_row_width" -gt "$_lib_layout_i02__table_width" ]]; then
         _lib_layout_i02__table_width="$_lib_layout_i02__total_row_width"
     fi
 
-    lib_layout__draw_divider "_lib_layout_i02__divider_h2" "$G__DIVIDER_H2_CHAR" \
-        "$_lib_layout_i02__table_width"
-    lib_layout__draw_divider "_lib_layout_i02__divider_h3" "$G__DIVIDER_H3_CHAR" \
-        "$_lib_layout_i02__table_width"
+    lib_layout__draw_divider "_lib_layout_i02__divider_h2" "$G__DIVIDER_H2_CHAR" "$_lib_layout_i02__table_width"
+    lib_layout__draw_divider "_lib_layout_i02__divider_h3" "$G__DIVIDER_H3_CHAR" "$_lib_layout_i02__table_width"
 
     if [[ -n "$_lib_layout_i02__summary" ]]; then
-        _lib_layout__draw_table_summary "_lib_layout_i02__summary_row" \
-            "$_lib_layout_i02__summary" "$_lib_layout_i02__table_width" \
-            "$_lib_layout_i02__border" "$G__TEXT_ALIGN_CENTER"
+        _lib_layout__draw_table_summary "_lib_layout_i02__summary_row" "$_lib_layout_i02__summary" "$_lib_layout_i02__table_width" "$_lib_layout_i02__border" "$G__TEXT_ALIGN_CENTER"
         _lib_layout_i02__table_lines="${_lib_layout_i02__divider_h2}"$'\n'
         _lib_layout_i02__table_lines+="${_lib_layout_i02__summary_row}"$'\n'
         _lib_layout_i02__table_lines+="${_lib_layout_i02__divider_h2}"
@@ -601,14 +565,11 @@ function lib_layout__draw_table() {
         _lib_layout_i02__table_lines="${_lib_layout_i02__divider_h3}"
     fi
 
-    for ((_lib_layout_i02__rowx = 0; \
-        _lib_layout_i02__rowx < _lib_layout_i02__nrows; _lib_layout_i02__rowx++)); do
+    for ((_lib_layout_i02__rowx = 0; _lib_layout_i02__rowx < _lib_layout_i02__nrows; _lib_layout_i02__rowx++)); do
         local _start_idx=$((_lib_layout_i02__rowx * _lib_layout_i02__ncols))
-        local -a _lib_layout_i02__cell_slice=( \
+        local -a _lib_layout_i02__cell_slice=(
             "${_lib_layout_i02__cells_ref[@]:_start_idx:_lib_layout_i02__ncols}")
-        _lib_layout__draw_table_row "_lib_layout_i02__row" "_lib_layout_i02__cell_slice" \
-            "_lib_layout_i02__calc_widths" "$_lib_layout_i02__table_width" \
-            "$_lib_layout_i02__border" "$_lib_layout_i02__align"
+        _lib_layout__draw_table_row "_lib_layout_i02__row" "_lib_layout_i02__cell_slice" "_lib_layout_i02__calc_widths" "$_lib_layout_i02__table_width" "$_lib_layout_i02__border" "$_lib_layout_i02__align"
         _lib_layout_i02__table_lines+=$'\n'"${_lib_layout_i02__row}"
         _lib_layout_i02__table_lines+=$'\n'"${_lib_layout_i02__divider_h3}"
     done

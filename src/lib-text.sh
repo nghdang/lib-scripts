@@ -12,7 +12,9 @@
 
 # ===== Source Guard =====
 [[ -n "${G__LIB_TEXT_SH_LOADED:-}" ]] && return 0
-declare -rx G__LIB_TEXT_SH_LOADED=1
+declare -gr G__LIB_TEXT_SH_LOADED=1
+
+shopt -s extglob
 
 # ===== Source Dependencies =====
 # shellcheck disable=SC1090,SC1091
@@ -85,8 +87,14 @@ function lib_text__align() {
     local _lib_text_i01__align
 
     # Variables
+    local _lib_text_i01__clean_text
+    local _lib_text_i01__visible_len
     local _lib_text_i01__padding_width=0
     local _lib_text_i01__padding=""
+    local _lib_text_i01__left_pad_width=0
+    local _lib_text_i01__right_pad_width=0
+    local _lib_text_i01__left_pad=""
+    local _lib_text_i01__right_pad=""
     local _lib_text_i01__aligned_text=""
 
     # Parse and validate arguments
@@ -102,19 +110,30 @@ function lib_text__align() {
     lib_assertion__assert_in "_LIB_TEXT_i01__TEXT_ALIGNS" "$_lib_text_i01__align"
 
     # Function body
+    _lib_text_i01__clean_text="${_lib_text_i01__text//$'\033'\[*([0-9;])[a-zA-Z]/}"
+    _lib_text_i01__visible_len="${#_lib_text_i01__clean_text}"
+    _lib_text_i01__padding_width=$((_lib_text_i01__width - _lib_text_i01__visible_len))
+
+    if [[ "$_lib_text_i01__padding_width" -gt 0 ]]; then
+        printf -v "_lib_text_i01__padding" '%*s' "$_lib_text_i01__padding_width" ''
+    fi
+
     if [[ "$_lib_text_i01__align" == "$G__TEXT_ALIGN_LEFT" ]]; then
-        printf -v "_lib_text_i01__aligned_text" '%-*s' \
-            "$_lib_text_i01__width" "$_lib_text_i01__text"
+        _lib_text_i01__aligned_text="${_lib_text_i01__text}${_lib_text_i01__padding}"
     elif [[ "$_lib_text_i01__align" == "$G__TEXT_ALIGN_RIGHT" ]]; then
-        printf -v "_lib_text_i01__aligned_text" '%*s' \
-            "$_lib_text_i01__width" "$_lib_text_i01__text"
+        _lib_text_i01__aligned_text="${_lib_text_i01__padding}${_lib_text_i01__text}"
     elif [[ "$_lib_text_i01__align" == "$G__TEXT_ALIGN_CENTER" ]]; then
-        _lib_text_i01__padding_width=$(((_lib_text_i01__width - ${#_lib_text_i01__text}) / 2))
         if [[ "$_lib_text_i01__padding_width" -gt 0 ]]; then
-            printf -v "_lib_text_i01__padding" '%*s' "$_lib_text_i01__padding_width" ''
+            _lib_text_i01__left_pad_width=$((_lib_text_i01__padding_width / 2))
+            _lib_text_i01__right_pad_width=$((_lib_text_i01__padding_width - _lib_text_i01__left_pad_width))
+            if [[ "$_lib_text_i01__left_pad_width" -gt 0 ]]; then
+                printf -v "_lib_text_i01__left_pad" '%*s' "$_lib_text_i01__left_pad_width" ''
+            fi
+            if [[ "$_lib_text_i01__right_pad_width" -gt 0 ]]; then
+                printf -v "_lib_text_i01__right_pad" '%*s' "$_lib_text_i01__right_pad_width" ''
+            fi
         fi
-        printf -v "_lib_text_i01__aligned_text" '%-*s' "$_lib_text_i01__width" \
-            "${_lib_text_i01__padding}${_lib_text_i01__text}"
+        _lib_text_i01__aligned_text="${_lib_text_i01__left_pad}${_lib_text_i01__text}${_lib_text_i01__right_pad}"
     fi
 
     _lib_text_i01__ret_val_ref="$_lib_text_i01__aligned_text"
@@ -146,6 +165,7 @@ function lib_text__find_max_len() {
     # Variables
     local _lib_text_i02__max_len=0
     local _lib_text_i02__item
+    local _lib_text_i02__clean_item
 
     # Parse and validate arguments
     lib_assertion__assert_args_count "$#" "2"
@@ -157,8 +177,9 @@ function lib_text__find_max_len() {
 
     # Function body
     for _lib_text_i02__item in "${_lib_text_i02__items[@]}"; do
-        if [[ "${#_lib_text_i02__item}" -gt "$_lib_text_i02__max_len" ]]; then
-            _lib_text_i02__max_len="${#_lib_text_i02__item}"
+        _lib_text_i02__clean_item="${_lib_text_i02__item//$'\033'\[*([0-9;])[a-zA-Z]/}"
+        if [[ "${#_lib_text_i02__clean_item}" -gt "$_lib_text_i02__max_len" ]]; then
+            _lib_text_i02__max_len="${#_lib_text_i02__clean_item}"
         fi
     done
 

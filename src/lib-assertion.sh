@@ -12,7 +12,7 @@
 
 # ===== Source Guard =====
 [[ -n "${G__LIB_ASSERTION_SH_LOADED:-}" ]] && return 0
-declare -rx G__LIB_ASSERTION_SH_LOADED=1
+declare -gr G__LIB_ASSERTION_SH_LOADED=1
 
 # ===== Source Dependencies =====
 # shellcheck disable=SC1090,SC1091
@@ -94,27 +94,19 @@ function lib_assertion__assert_args_count() {
     _lib_assertion_i01__min_args="$2"
     _lib_assertion_i01__max_args="${3:-$_LIB_ASSERTION_i01__MAX_ARGS}"
 
-    lib_validation__is_number "$_lib_assertion_i01__args_count" ||
-        lib_base__throw "$G__ERR_TYPE_ERROR" \
-            "Argument count must be a number: '$_lib_assertion_i01__args_count'"
+    lib_validation__is_number "$_lib_assertion_i01__args_count" || lib_base__throw "$G__ERR_TYPE_ERROR" "Argument count must be a number: '$_lib_assertion_i01__args_count'"
 
-    lib_validation__is_number "$_lib_assertion_i01__min_args" ||
-        lib_base__throw "$G__ERR_TYPE_ERROR" \
-            "Minimum arguments must be a number: '$_lib_assertion_i01__min_args'"
+    lib_validation__is_number "$_lib_assertion_i01__min_args" || lib_base__throw "$G__ERR_TYPE_ERROR" "Minimum arguments must be a number: '$_lib_assertion_i01__min_args'"
 
-    lib_validation__is_number "$_lib_assertion_i01__max_args" ||
-        lib_base__throw "$G__ERR_TYPE_ERROR" \
-            "Maximum arguments must be a number: '$_lib_assertion_i01__max_args'"
+    lib_validation__is_number "$_lib_assertion_i01__max_args" || lib_base__throw "$G__ERR_TYPE_ERROR" "Maximum arguments must be a number: '$_lib_assertion_i01__max_args'"
 
     # Function body
     if [[ "$_lib_assertion_i01__args_count" -lt "$_lib_assertion_i01__min_args" ]]; then
-        lib_base__throw "$G__ERR_MISSING_ARG" \
-            "${FUNCNAME[1]} required at least $_lib_assertion_i01__min_args argument(s)"
+        lib_base__throw "$G__ERR_MISSING_ARG" "${FUNCNAME[1]} required at least $_lib_assertion_i01__min_args argument(s)"
     fi
 
     if [[ "$_lib_assertion_i01__args_count" -gt "$_lib_assertion_i01__max_args" ]]; then
-        lib_base__throw "$G__ERR_TOO_MANY_ARGS" \
-            "${FUNCNAME[1]} allow at most $_lib_assertion_i01__max_args arguments"
+        lib_base__throw "$G__ERR_TOO_MANY_ARGS" "${FUNCNAME[1]} allow at most $_lib_assertion_i01__max_args arguments"
     fi
 
     return "$G__ERR_OK"
@@ -149,8 +141,7 @@ function lib_assertion__assert_var_name() {
 
     # Function body
     [[ "$_lib_assertion_i02__param" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]] && return "$G__ERR_OK"
-    lib_base__throw "$G__ERR_TYPE_ERROR" \
-        "Not a valid variable name: '$_lib_assertion_i02__param'"
+    lib_base__throw "$G__ERR_TYPE_ERROR" "Not a valid variable name: '$_lib_assertion_i02__param'"
 }
 
 #######################################
@@ -342,9 +333,7 @@ function lib_assertion__assert_in() {
     _lib_assertion_i07__item="$2"
 
     # Function body
-    lib_validation__is_in "${!_lib_assertion_i07__array_ref}" "$_lib_assertion_i07__item" ||
-        lib_base__throw "$G__ERR_TYPE_ERROR" \
-            "Array does not contain item '$_lib_assertion_i07__item'"
+    lib_validation__is_in "${!_lib_assertion_i07__array_ref}" "$_lib_assertion_i07__item" || lib_base__throw "$G__ERR_TYPE_ERROR" "Array does not contain item '$_lib_assertion_i07__item'"
 
     return "$G__ERR_OK"
 }
