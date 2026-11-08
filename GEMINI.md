@@ -20,8 +20,8 @@ lib-scripts/
 ├── script.sh.tmpl              # Canonical template for library scripts
 ├── src/
 │   ├── lib-base.sh             # Base constants, error codes, and utilities (zero dependencies)
+│   └── lib-testing.sh          # Lightweight unit testing framework (depends on src/lib-base.sh)
 └── test/
-    ├── lib-tests.sh            # Lightweight unit testing framework (depends on src/lib-base.sh)
     └── test-script.sh.tmpl     # Canonical template for test suites
 ```
 
@@ -31,7 +31,7 @@ lib-scripts/
 
 1. **Strict Dependency Hierarchy**:
    - `src/lib-base.sh` must remain dependency-free (`Dependencies: None`).
-   - `test/lib-tests.sh` depends solely on `src/lib-base.sh`.
+   - `src/lib-testing.sh` depends solely on `src/lib-base.sh`.
 2. **No Backward Compatibility**:
    - Do not maintain backward compatibility, legacy shims, wrappers, or aliases.
    - Whenever an API, template, or convention changes, all dependent scripts, callers, and tests must immediately adapt and update to the new design.

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Source      : test/lib-tests.sh
+# Source      : src/lib-testing.sh
 # Dependencies: src/lib-base.sh
 # Description : Testing framework.
 #
@@ -15,7 +15,7 @@ declare -rx G__LIB_TESTING_SH_LOADED=1
 
 # ===== Source Dependencies =====
 # shellcheck disable=SC1090,SC1091
-source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/../src/lib-base.sh"
+source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/lib-base.sh"
 
 # ===== Function ID Mapping =====
 #

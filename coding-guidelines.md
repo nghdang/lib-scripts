@@ -263,7 +263,7 @@ If the function never terminates the shell process, this section must be omitted
 ```bash
 #
 # Source      : test/test-lib-base.sh
-# Dependencies: test/lib-testing.sh
+# Dependencies: src/lib-testing.sh
 # FUT         : src/lib-base.sh
 #
 ```
@@ -306,7 +306,7 @@ Every test suite script must be organized into the following canonical sections 
   where `<tc_id>` is retrieved from the corresponding equivalence class table (e.g. `tc1`, `tc2`).
 - Example: `tc__load_file__tc1__success`.
 - Test case functions must not have docstrings.
-- Inside test cases, use standard assertion APIs from `test/lib-testing.sh`:
+- Inside test cases, use standard assertion APIs from `src/lib-testing.sh`:
   - `lib_testing__sut_existence "<sut_name>"`: Verify existence of SUT before running assertions.
   - `lib_testing__eq "<expected>" "<actual>" "<message>"`: Value equality.
   - `lib_testing__error_code_eq "<expected_code>" "<actual_code>" "<message>"`: Return / exit code equality.

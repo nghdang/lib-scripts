@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Source      : test/test-lib-logging.sh
-# Dependencies: test/lib-tests.sh
+# Dependencies: src/lib-testing.sh
 # FUT         : src/lib-logging.sh
 #
 
@@ -15,7 +15,7 @@ export G__TEST_LIB_LOGGING_SH_LOADED=1
 
 # ===== Source Dependencies =====
 # shellcheck disable=SC1090,SC1091
-source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/lib-testing.sh"
+source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/../src/lib-testing.sh"
 
 # =============================================================================
 # Global Constants
